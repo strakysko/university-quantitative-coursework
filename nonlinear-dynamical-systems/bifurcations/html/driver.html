@@ -1,0 +1,285 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Assignment 3 - Nonlinear dynamical systems</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-01-05"><meta name="DC.source" content="driver.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Assignment 3 - Nonlinear dynamical systems</h1><!--introduction--><p>by David Straka on January 2023</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Question 1</a></li><li><a href="#2">Question 2</a></li><li><a href="#3">Question 3</a></li><li><a href="#4">Question 4</a></li><li><a href="#5">Question 5</a></li><li><a href="#6">Question 6</a></li></ul></div><h2 id="1">Question 1</h2><p>Homogeneous steady states follow from the given parameter restrictions and the system of equations</p><p><img src="driver_eq04183722124873730204.png" alt="$$0 = v(wv - \gamma),$$" style="width:94px;height:15px;"></p><p><img src="driver_eq05578308865136230569.png" alt="$$0 = \alpha - w - wv^2.$$" style="width:110px;height:14px;"></p><p>The first equilibrium is</p><p><img src="driver_eq09015875044006043344.png" alt="$$E_1 = (0,\alpha)$$" style="width:70px;height:15px;"></p><p>and always exists.</p><p>The first equation gives that <img src="driver_eq05718925614012439856.png" alt="$wv = \gamma,$" style="width:50px;height:10px;"> which is bigger than zero by assumption. This implies that <img src="driver_eq03586438482530549572.png" alt="$w \neq 0$" style="width:37px;height:14px;">. Hence, <img src="driver_eq16625829992263791114.png" alt="$v=\frac{\gamma}{w}.$" style="width:42px;height:17px;"> Plugging this into the second equation yields that <img src="driver_eq06489572366058901881.png" alt="$0=w^2 - \alpha w + \gamma^2$" style="width:113px;height:16px;">. Solving this quadratic equation gives two other equilibria</p><p><img src="driver_eq17801788273170469007.png" alt="$$E_2 = \left( \frac{2\gamma}{\alpha + \sqrt{\alpha^2 - 4\gamma^2}},&#xA;\frac{\alpha}{2} + \frac{1}{2}\sqrt{\alpha^2 - 4\gamma^2}\right) \quad&#xA;\textit{and} \quad E_3 = \left(\frac{2\gamma}{\alpha - \sqrt{\alpha^2 - 4\gamma^2}},&#xA;\frac{\alpha}{2} - \frac{1}{2}\sqrt{\alpha^2 - 4\gamma^2}\right).$$" style="width:616px;height:45px;"></p><p>It follows from <img src="driver_eq08955880528454245862.png" alt="$0<4\gamma^2$" style="width:47px;height:16px;"> that <img src="driver_eq01947439848581599924.png" alt="$\frac{\alpha}{2} - \frac{1}{2}\sqrt{\alpha^2 - 4\gamma^2} \geq 0$" style="width:131px;height:19px;">.</p><p>The equilibria <img src="driver_eq09232917951430944190.png" alt="$E_2$" style="width:15px;height:13px;"> and <img src="driver_eq15090258729820053077.png" alt="$E_3$" style="width:15px;height:13px;"> exist iff <img src="driver_eq05441102466824842112.png" alt="$\alpha \geq 2\gamma$" style="width:44px;height:14px;"> because <img src="driver_eq03158747792916826732.png" alt="$v$" style="width:7px;height:7px;"> and <img src="driver_eq00125694759345388081.png" alt="$w$" style="width:10px;height:7px;"> must be real. This means that only if the rainfall rate <img src="driver_eq14221827199139923399.png" alt="$\alpha$" style="width:9px;height:7px;"> is at least twice as big as the death rate <img src="driver_eq17096441642737911057.png" alt="$\gamma$" style="width:8px;height:10px;">, then we have all three homogeneous equilibria. Otherwise, we have only the equilibrium <img src="driver_eq11909412771455524300.png" alt="$E_1$" style="width:15px;height:13px;">. This supports statements <img src="driver_eq04611537739708754199.png" alt="$S1$" style="width:15px;height:11px;"> and <img src="driver_eq17003605648555182350.png" alt="$S2$" style="width:16px;height:11px;">.</p><h2 id="2">Question 2</h2><p><img src="driver_eq13448330931445951378.png" alt="$$\mathcal{L}(v_*, w_*) = \pmatrix{\partial_x^2 - \gamma + 2w_*v_* &amp;&#xA;v_*^2 \cr -2w_*v_* &amp; \beta\partial_x - 1 - v_*^2}$$" style="width:290px;height:36px;"></p><h2 id="3">Question 3</h2><p>Plugging in the vegetative equilibrium gives</p><p><img src="driver_eq08593678052027049642.png" alt="$$\mathcal{L}(E_3) = \pmatrix{\partial_x^2 + \gamma &amp;&#xA;\frac{2\gamma^2}{\alpha^2 - 2\gamma^2 -\alpha\sqrt{\alpha^2-4\gamma^2}} \cr&#xA;-2\gamma &amp; \beta \partial_x - 1 - \frac{2\gamma^2}{\alpha^2 - 2\gamma^2&#xA;-\alpha\sqrt{\alpha^2-4\gamma^2}}}.$$" style="width:315px;height:54px;"></p><p>Notice that <img src="driver_eq00651671608103902185.png" alt="$v_* = \frac{2\gamma}{\alpha-\sqrt{\alpha^2-4\gamma^2}} = \frac{2\gamma\left(\alpha+\sqrt{\alpha^2-4\gamma^2}\right)} {\left(\alpha-\sqrt{\alpha^2-4\gamma^2}\right) \left(\alpha+\sqrt{\alpha^2-4\gamma^2}\right)} = \frac{\alpha+\sqrt{\alpha^2-4\gamma^2}}{2\gamma} = \mu(\alpha, \gamma)$" style="width:417px;height:38px;">.</p><p>Hence, the ansatz <img src="driver_eq05624156727185775612.png" alt="$\varphi(x,t)=\exp(\lambda t+ikx)\psi$" style="width:157px;height:15px;"> gives <img src="driver_eq16483213946572887260.png" alt="$M\psi=\lambda\psi$" style="width:63px;height:14px;"> with <img src="driver_eq00802513524912003067.png" alt="$M$" style="width:15px;height:10px;"> as in Assignment 3. The matrix <img src="driver_eq00802513524912003067.png" alt="$M$" style="width:15px;height:10px;"> has the eigenvalues <img src="driver_eq17977385033141340018.png" alt="$\lambda_{1,2} = \frac{\tau \pm \sqrt{\tau^2-4\delta}}{2},$" style="width:99px;height:20px;"> where <img src="driver_eq03984532113812854263.png" alt="$\tau = \gamma - k^2 - 1 -\mu(\alpha,\gamma)^2 + i \beta k$" style="width:202px;height:17px;"> is the trace of <img src="driver_eq00802513524912003067.png" alt="$M$" style="width:15px;height:10px;"> and <img src="driver_eq05716839523026332829.png" alt="$\delta = \gamma\mu(\alpha,\gamma)^2 -\gamma +i\beta k\gamma +k^2 +k^2\mu(\alpha,\gamma)^2 - i\beta k^3$" style="width:319px;height:17px;"> is the determinant of <img src="driver_eq00802513524912003067.png" alt="$M$" style="width:15px;height:10px;">.</p><h2 id="4">Question 4</h2><p>I expected the eigenvalues to be complex conjugates. It is not the case, as it can be seen in the plot below, because the characteristic polynomial of the matrix <img src="driver_eq00802513524912003067.png" alt="$M$" style="width:15px;height:10px;"> does not have real coefficients. This shows that a matrix with complex entries does not necessarily have complex conjugate pairs of eigenvalues.</p><p>The plot below provides a numerical evidence that the real parts of both eigenvalues for the given parameters are negative. Hence, the vegetative equilibrium is linearly stable.</p><pre class="codeinput"><span class="comment">% Trace, determinant, and eigenvalues function handles</span>
+mu = @(a,g) (a + sqrt(a^2 - 4*g^2))/(2*g);
+tau  = @(a,b,g,k) g - k.^2 - 1 - mu(a,g)^2 + 1i*b*k;
+delta = @(a,b,g,k) g*mu(a,g)^2 - g + 1i*b*g*k + k.^2 + mu(a,g)^2*k.^2 - 1i*b*k.^3;
+lambda1 = @(a,b,g,k) (tau(a,b,g,k)-sqrt(tau(a,b,g,k).^2 - 4*delta(a,b,g,k)))/2;
+lambda2 = @(a,b,g,k) (tau(a,b,g,k)+sqrt(tau(a,b,g,k).^2 - 4*delta(a,b,g,k)))/2;
+
+rel1 = @(a,b,g,k) real(lambda1(a,b,g,k));
+rel2 = @(a,b,g,k) real(lambda2(a,b,g,k));
+imag1 = @(a,b,g,k) imag(lambda1(a,b,g,k));
+imag2 = @(a,b,g,k) imag(lambda2(a,b,g,k));
+
+<span class="comment">% Set parameters</span>
+a = 8; b = 20; g = 2;
+
+<span class="comment">% Continuous variable k</span>
+k = linspace(-2,2,1000);
+
+<span class="comment">% Plot dispersion relation (with inset around k=0)</span>
+figure, hold <span class="string">on</span>;
+plot(k,rel1(a,b,g,k),<span class="string">'DisplayName'</span>,<span class="string">'Re \lambda_1'</span>);             plot(k,rel2(a,b,g,k),<span class="string">'DisplayName'</span>,<span class="string">'Re \lambda_2'</span>);
+plot(k,imag1(a,b,g,k),<span class="string">'DisplayName'</span>,<span class="string">'Im \lambda_1'</span>);            plot(k,imag2(a,b,g,k),<span class="string">'DisplayName'</span>,<span class="string">'Im \lambda_2'</span>);
+hold <span class="string">off</span>; grid <span class="string">on</span>; ylim([-15 5]); xlabel(<span class="string">'k'</span>);
+lgd = legend; lgd.Location = <span class="string">'northoutside'</span>; lgd.NumColumns = 3;
+drawnow;
+</pre><img vspace="5" hspace="5" src="driver_01.png" alt=""> <h2 id="5">Question 5</h2><p>We can see in the plot below that for <img src="driver_eq05930154807419693608.png" alt="$\alpha = 7$" style="width:36px;height:10px;">, there exist perturbations for <img src="driver_eq15636846968047188835.png" alt="$k$" style="width:7px;height:11px;"> such that the real part of one of the corresponding eigenvalues is positive. Such system is unstable and will exhibit patterns. The plot for <img src="driver_eq10770017672869775142.png" alt="$\alpha = 8$" style="width:35px;height:10px;"> contains only eigenvalues with negative real parts. Then the system is stable and does not exhibit patterns for any perturbation. The plot provides numerical evidence that there is a critical <img src="driver_eq13180798595694139031.png" alt="$\alpha_c$" style="width:14px;height:10px;"> between 7 and 8 changing the stability of the vegetative equilibrium and causing bifurcation.</p><p>This plot provides numerical evidence that the bifurcation is neither Turing (there is no k s.t. both real and imaginary parts of the eigenvalues are zero) not Hopf (at k=0, the eigenvalues are not purely imaginary). However, we can predict from Lecture notes 3 Case 4, that the pattern is a travelling wave because of the similarity of plots. This coincides with the expected pattern of a wave from the Turing bifurcation.</p><pre class="codeinput">b = 20; g = 2;
+
+figure, hold <span class="string">on</span>;
+<span class="keyword">for</span> a = 7: 0.2: 8
+    plot(k,rel1(a,b,g,k));             plot(k,rel2(a,b,g,k));
+    plot(k,imag1(a,b,g,k));            plot(k,imag2(a,b,g,k));
+<span class="keyword">end</span>
+hold <span class="string">off</span>; grid <span class="string">on</span>; ylim([-15 5]); xlabel(<span class="string">'k'</span>);
+drawnow;
+</pre><img vspace="5" hspace="5" src="driver_02.png" alt=""> <h2 id="6">Question 6</h2><p>The plot shows that the concentration of vegetation <img src="driver_eq03158747792916826732.png" alt="$v$" style="width:7px;height:7px;"> forms a (travelling) wave pattern over time for the given parameters. This coincides with the suggested wave in Question 5. This wave pattern means that the vegetation concentration at a certain position is expected to oscillate as the time passes.</p><pre class="codeinput"><span class="comment">% Set parameters</span>
+p = [7 20 2];
+L = 15.7;
+
+<span class="comment">% Instantiating periodic differentiation matrix</span>
+nx = 1500; [x,Dx,Dxx] = PeriodicDiffMat([-L,L],nx);
+
+<span class="comment">% Initial condition (steady state + perburbation)</span>
+e = ones(size(x));
+v0 = 4/(7 - sqrt(33)); w0 = 7/2 - sqrt(33)/2; z0 = [v0*e; w0*e];
+z0 = z0 + [cos(4*pi/L*x); e];
+
+<span class="comment">% Time step</span>
+rhs = @(t,z) Schnakenberg(z,p,Dx,Dxx);
+jac = @(t,z) SchnakenbergJacobian(z,p,Dx,Dxx);
+opts = odeset(<span class="string">'Jacobian'</span>,jac);
+tSpan = 0:0.1:300;
+<span class="comment">% tSpan = [0:0.1:50];</span>
+[t,ZHist] = ode15s(rhs,tSpan,z0,opts);
+
+<span class="comment">% Space-time plot</span>
+PlotHistory(x,t,ZHist,p,[]);
+</pre><img vspace="5" hspace="5" src="driver_03.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Assignment 3 - Nonlinear dynamical systems
+% by David Straka on January 2023
+
+%% Question 1
+% Homogeneous steady states follow from the given parameter restrictions 
+% and the system of equations
+%
+% $$0 = v(wv - \gamma),$$
+%
+% $$0 = \alpha - w - wv^2.$$
+%
+% The first equilibrium is
+%
+% $$E_1 = (0,\alpha)$$
+%
+% and always exists.
+%
+% The first equation gives that $wv = \gamma,$ which is bigger than zero
+% by assumption. This implies that $w \neq 0$. Hence, $v=\frac{\gamma}{w}.$
+% Plugging this into the second equation yields that $0=w^2 - \alpha w +
+% \gamma^2$. Solving this quadratic equation gives two other equilibria
+%
+% $$E_2 = \left( \frac{2\gamma}{\alpha + \sqrt{\alpha^2 - 4\gamma^2}},
+% \frac{\alpha}{2} + \frac{1}{2}\sqrt{\alpha^2 - 4\gamma^2}\right) \quad 
+% \textit{and} \quad E_3 = \left(\frac{2\gamma}{\alpha - \sqrt{\alpha^2 - 4\gamma^2}},
+% \frac{\alpha}{2} - \frac{1}{2}\sqrt{\alpha^2 - 4\gamma^2}\right).$$
+%
+% It follows from $0<4\gamma^2$ that $\frac{\alpha}{2} - 
+% \frac{1}{2}\sqrt{\alpha^2 - 4\gamma^2} \geq 0$.
+%
+% The equilibria $E_2$ and $E_3$ exist iff $\alpha \geq 2\gamma$ because
+% $v$ and $w$ must be real. This means that only if the rainfall rate
+% $\alpha$ is at least twice as big as the death rate $\gamma$, then we
+% have all three homogeneous equilibria. Otherwise, we have only the
+% equilibrium $E_1$. This supports statements $S1$ and $S2$.
+
+%% Question 2
+% $$\mathcal{L}(v_*, w_*) = \pmatrix{\partial_x^2 - \gamma + 2w_*v_* &
+% v_*^2 \cr -2w_*v_* & \beta\partial_x - 1 - v_*^2}$$
+
+%% Question 3
+% Plugging in the vegetative equilibrium gives
+%
+% $$\mathcal{L}(E_3) = \pmatrix{\partial_x^2 + \gamma & 
+% \frac{2\gamma^2}{\alpha^2 - 2\gamma^2 -\alpha\sqrt{\alpha^2-4\gamma^2}} \cr
+% -2\gamma & \beta \partial_x - 1 - \frac{2\gamma^2}{\alpha^2 - 2\gamma^2 
+% -\alpha\sqrt{\alpha^2-4\gamma^2}}}.$$
+%
+% Notice that $v_* = \frac{2\gamma}{\alpha-\sqrt{\alpha^2-4\gamma^2}} = 
+% \frac{2\gamma\left(\alpha+\sqrt{\alpha^2-4\gamma^2}\right)}
+% {\left(\alpha-\sqrt{\alpha^2-4\gamma^2}\right)
+% \left(\alpha+\sqrt{\alpha^2-4\gamma^2}\right)} = 
+% \frac{\alpha+\sqrt{\alpha^2-4\gamma^2}}{2\gamma} = \mu(\alpha, \gamma)$.
+%
+% Hence, the ansatz $\varphi(x,t)=\exp(\lambda t+ikx)\psi$ gives
+% $M\psi=\lambda\psi$ with $M$ as in Assignment 3.
+% The matrix $M$ has the eigenvalues $\lambda_{1,2} = 
+% \frac{\tau \pm \sqrt{\tau^2-4\delta}}{2},$ where $\tau = \gamma - k^2 - 1
+% -\mu(\alpha,\gamma)^2 + i \beta k$ is the trace of $M$ and $\delta =
+% \gamma\mu(\alpha,\gamma)^2 -\gamma +i\beta k\gamma +k^2 
+% +k^2\mu(\alpha,\gamma)^2 - i\beta k^3$ is the determinant of $M$.
+
+%% Question 4
+% I expected the eigenvalues to be complex conjugates. It is not the case,
+% as it can be seen in the plot below, because the characteristic
+% polynomial of the matrix $M$ does not have real coefficients. This shows
+% that a matrix with complex entries does not necessarily have complex
+% conjugate pairs of eigenvalues.
+%
+% The plot below provides a numerical evidence that the real parts of both
+% eigenvalues for the given parameters are negative. Hence, the vegetative
+% equilibrium is linearly stable.
+
+% Trace, determinant, and eigenvalues function handles
+mu = @(a,g) (a + sqrt(a^2 - 4*g^2))/(2*g);
+tau  = @(a,b,g,k) g - k.^2 - 1 - mu(a,g)^2 + 1i*b*k;
+delta = @(a,b,g,k) g*mu(a,g)^2 - g + 1i*b*g*k + k.^2 + mu(a,g)^2*k.^2 - 1i*b*k.^3;
+lambda1 = @(a,b,g,k) (tau(a,b,g,k)-sqrt(tau(a,b,g,k).^2 - 4*delta(a,b,g,k)))/2;
+lambda2 = @(a,b,g,k) (tau(a,b,g,k)+sqrt(tau(a,b,g,k).^2 - 4*delta(a,b,g,k)))/2;
+
+rel1 = @(a,b,g,k) real(lambda1(a,b,g,k));
+rel2 = @(a,b,g,k) real(lambda2(a,b,g,k));
+imag1 = @(a,b,g,k) imag(lambda1(a,b,g,k));
+imag2 = @(a,b,g,k) imag(lambda2(a,b,g,k));
+
+% Set parameters
+a = 8; b = 20; g = 2;
+
+% Continuous variable k
+k = linspace(-2,2,1000);
+
+% Plot dispersion relation (with inset around k=0)
+figure, hold on;
+plot(k,rel1(a,b,g,k),'DisplayName','Re \lambda_1');             plot(k,rel2(a,b,g,k),'DisplayName','Re \lambda_2');
+plot(k,imag1(a,b,g,k),'DisplayName','Im \lambda_1');            plot(k,imag2(a,b,g,k),'DisplayName','Im \lambda_2');
+hold off; grid on; ylim([-15 5]); xlabel('k'); 
+lgd = legend; lgd.Location = 'northoutside'; lgd.NumColumns = 3;
+drawnow;
+
+%% Question 5
+% We can see in the plot below that for $\alpha = 7$, there exist perturbations for $k$ such
+% that the real part of one of the corresponding eigenvalues is positive.
+% Such system is unstable and will exhibit patterns. The plot
+% for $\alpha = 8$ contains only eigenvalues with negative real parts. Then
+% the system is stable and does not exhibit patterns for any perturbation. 
+% The plot provides numerical evidence that there is a critical $\alpha_c$
+% between 7 and 8 changing the stability of the vegetative equilibrium and
+% causing bifurcation.
+%
+% This plot provides numerical evidence that the bifurcation is neither
+% Turing (there is no k s.t. both real and imaginary parts of the 
+% eigenvalues are zero) not Hopf (at k=0, the eigenvalues are not purely
+% imaginary). However, we can predict from Lecture notes 3 Case 4, that the pattern
+% is a travelling wave because of the similarity of plots. This coincides
+% with the expected pattern of a wave from the Turing bifurcation.
+
+b = 20; g = 2;
+
+figure, hold on;
+for a = 7: 0.2: 8 
+    plot(k,rel1(a,b,g,k));             plot(k,rel2(a,b,g,k));
+    plot(k,imag1(a,b,g,k));            plot(k,imag2(a,b,g,k));
+end
+hold off; grid on; ylim([-15 5]); xlabel('k'); 
+drawnow;
+
+%% Question 6
+% The plot shows that the concentration of vegetation $v$ forms a (travelling)
+% wave pattern over time for the given parameters. This coincides with the
+% suggested wave in Question 5. This wave pattern means that
+% the vegetation concentration at a certain position is expected 
+% to oscillate as the time passes.
+
+
+% Set parameters
+p = [7 20 2];
+L = 15.7;
+
+% Instantiating periodic differentiation matrix
+nx = 1500; [x,Dx,Dxx] = PeriodicDiffMat([-L,L],nx); 
+
+% Initial condition (steady state + perburbation)
+e = ones(size(x)); 
+v0 = 4/(7 - sqrt(33)); w0 = 7/2 - sqrt(33)/2; z0 = [v0*e; w0*e]; 
+z0 = z0 + [cos(4*pi/L*x); e];
+
+% Time step
+rhs = @(t,z) Schnakenberg(z,p,Dx,Dxx);
+jac = @(t,z) SchnakenbergJacobian(z,p,Dx,Dxx);
+opts = odeset('Jacobian',jac);
+tSpan = 0:0.1:300;
+% tSpan = [0:0.1:50];
+[t,ZHist] = ode15s(rhs,tSpan,z0,opts);
+
+% Space-time plot
+PlotHistory(x,t,ZHist,p,[]);
+##### SOURCE END #####
+--></body></html>
