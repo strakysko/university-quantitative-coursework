@@ -1,0 +1,231 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>ODEsolve</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-28"><meta name="DC.source" content="ODEsolve.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span> [T,U] = ODEsolve(fun,S,u0,theta,h)
+<span class="comment">%ODESOLVE solves initial value problem of nonlinear ODEs.</span>
+<span class="comment">%</span>
+<span class="comment">%   ODESOLVE attempts to solve initial value problem of ODEs of the form:</span>
+<span class="comment">%</span>
+<span class="comment">%   U' = FUN(U)</span>
+<span class="comment">%   U(0) = U0</span>
+<span class="comment">%</span>
+<span class="comment">%   where FUN may be a vector or a matrix, and U is a vector.</span>
+<span class="comment">%</span>
+<span class="comment">%   ODESOLVE implements three different methods: forward Euler method,</span>
+<span class="comment">%   backward Euler method, and Crank-Nicolson method. Choose parameter</span>
+<span class="comment">%   THETA in [0,1]. Choose THETA = 0 for the forward Euler method,</span>
+<span class="comment">%   THETA = 1 for the backward Euler method, or THETA = 1/2 for the</span>
+<span class="comment">%   Crank-Nicolson method.</span>
+<span class="comment">%</span>
+<span class="comment">%   [T,U] = ODESOLVE(FUN,S,U0,THETA,H) starts at the initial value U0 and</span>
+<span class="comment">%   tries to solve U' = FUN(U). If vector S contains two values, then these</span>
+<span class="comment">%   two values define an interval of times at which U is evaluated. If</span>
+<span class="comment">%   vector S contains more than two values, then U is evaluated for all the</span>
+<span class="comment">%   values in S. The time step H discretizes the time axis. The vector T</span>
+<span class="comment">%   consists of times at which U is evaluated. U may be a vector or a</span>
+<span class="comment">%   Matrix such that every column corresponds to one variable and every row</span>
+<span class="comment">%   corresponds to a time in T.</span>
+
+<span class="comment">% discretizes S with step size h (including the greatest element of S)</span>
+T = min(S) : h : max(S) + h;
+
+<span class="comment">% Find U for all points in time in T</span>
+U(:,1) = u0;
+<span class="keyword">for</span> n = 2:length(T)
+
+    <span class="comment">% Solve for x = u_{n+1}</span>
+    f = @(x) x -  U(:,n-1) - h*((1-theta)*fun(T(n-1),U(:,n-1)) + theta*<span class="keyword">...</span>
+        fun(T(n-1),x));
+    U(:,n) = fsolve(f,U(:,n-1),optimset(<span class="string">'Display'</span>,<span class="string">'off'</span>));
+<span class="keyword">end</span>
+
+<span class="comment">% Find U for requested points in time in S</span>
+<span class="keyword">if</span> length(S) &gt; 2
+
+    <span class="comment">% Find U for each element in S, say t*</span>
+    <span class="keyword">for</span> i = 1:length(S)
+
+        <span class="comment">% Check whether U was already calculated for the element t*</span>
+        <span class="keyword">if</span> ismember(S(i),T)
+            [~,locationInT] = ismember(S(i),T);
+            T2(i) = T(locationInT);
+            U2(:,i) = U(:,locationInT);
+
+        <span class="comment">% Interpolate U linearlly for the element t*</span>
+        <span class="comment">% (I did not know whether I could use the built-in interpolation</span>
+        <span class="comment">% function)</span>
+        <span class="keyword">else</span>
+            <span class="comment">% Find a greatest element t in T such that the greatest element</span>
+            <span class="comment">% is smaller than t*</span>
+            t = max(T(T &lt; S(i)));
+
+            <span class="comment">% Determine U corresponding to t*</span>
+            U2(:,i) = U(:,T==t) + (U(:,T==t+h) - U(:,T==t))*(S(i) - t)/h;
+            T2(i) = S(i);
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+    T = T2';
+    U = U2';
+
+<span class="comment">% Check if U outside the interval S was found. Delete such U.</span>
+<span class="keyword">else</span>
+    <span class="keyword">if</span> S(end) ~= T(end)
+        U(end) = [];
+        U = U';
+        T(end) = [];
+        T = T';
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><pre class="codeoutput error">Not enough input arguments.
+
+Error in ODEsolve (line 27)
+T = min(S) : h : max(S) + h;
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [T,U] = ODEsolve(fun,S,u0,theta,h)
+%ODESOLVE solves initial value problem of nonlinear ODEs.
+%
+%   ODESOLVE attempts to solve initial value problem of ODEs of the form:
+%             
+%   U' = FUN(U)
+%   U(0) = U0
+%
+%   where FUN may be a vector or a matrix, and U is a vector.   
+%
+%   ODESOLVE implements three different methods: forward Euler method,
+%   backward Euler method, and Crank-Nicolson method. Choose parameter
+%   THETA in [0,1]. Choose THETA = 0 for the forward Euler method, 
+%   THETA = 1 for the backward Euler method, or THETA = 1/2 for the
+%   Crank-Nicolson method.
+%
+%   [T,U] = ODESOLVE(FUN,S,U0,THETA,H) starts at the initial value U0 and 
+%   tries to solve U' = FUN(U). If vector S contains two values, then these
+%   two values define an interval of times at which U is evaluated. If
+%   vector S contains more than two values, then U is evaluated for all the
+%   values in S. The time step H discretizes the time axis. The vector T
+%   consists of times at which U is evaluated. U may be a vector or a
+%   Matrix such that every column corresponds to one variable and every row
+%   corresponds to a time in T.
+
+% discretizes S with step size h (including the greatest element of S)
+T = min(S) : h : max(S) + h;
+
+% Find U for all points in time in T
+U(:,1) = u0;
+for n = 2:length(T)
+    
+    % Solve for x = u_{n+1}
+    f = @(x) x -  U(:,n-1) - h*((1-theta)*fun(T(n-1),U(:,n-1)) + theta*...
+        fun(T(n-1),x));
+    U(:,n) = fsolve(f,U(:,n-1),optimset('Display','off'));
+end
+
+% Find U for requested points in time in S
+if length(S) > 2
+    
+    % Find U for each element in S, say t*
+    for i = 1:length(S)
+        
+        % Check whether U was already calculated for the element t*
+        if ismember(S(i),T)
+            [~,locationInT] = ismember(S(i),T);
+            T2(i) = T(locationInT);
+            U2(:,i) = U(:,locationInT);
+            
+        % Interpolate U linearlly for the element t*
+        % (I did not know whether I could use the built-in interpolation
+        % function)
+        else
+            % Find a greatest element t in T such that the greatest element
+            % is smaller than t*
+            t = max(T(T < S(i)));
+            
+            % Determine U corresponding to t*
+            U2(:,i) = U(:,T==t) + (U(:,T==t+h) - U(:,T==t))*(S(i) - t)/h;
+            T2(i) = S(i);
+        end
+    end
+    
+    T = T2';
+    U = U2';
+    
+% Check if U outside the interval S was found. Delete such U.
+else
+    if S(end) ~= T(end)
+        U(end) = [];
+        U = U';
+        T(end) = [];
+        T = T';
+    end
+end
+end
+##### SOURCE END #####
+--></body></html>

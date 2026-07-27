@@ -1,0 +1,227 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>DFFT</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-11-23"><meta name="DC.source" content="DFFT.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span> [result] = DFFT(input,inverse)
+<span class="comment">%DFFT applies the fast Fourier transform or its inverse to the input.</span>
+<span class="comment">%   [RESULT]=DFFT(INPUT, INVERSE) either finds the Fourier transform</span>
+<span class="comment">%   RESULT of an L-periodic function INPUT when INVERSE = 0 or determines</span>
+<span class="comment">%   a function RESULT from the Fourier transform INPUT when INVERSE = 1.</span>
+<span class="comment">%</span>
+<span class="comment">%   The length of the input vector INPUT needs to be 2^N, where N is</span>
+<span class="comment">%   a positive integer.</span>
+<span class="comment">%   The input INVERSE is optional with the default value 0.</span>
+
+<span class="comment">% default inputs</span>
+<span class="keyword">if</span> nargin &lt; 2
+    inverse = 0;
+<span class="keyword">end</span>
+
+M = length(input);
+
+<span class="comment">% if INVERSE = 1, IFFT is applied. Otherwise, FFT is applied.</span>
+<span class="keyword">if</span> inverse == 1
+    <span class="comment">% In this case, the input is a FT that is scaled by M to get F suitable</span>
+    <span class="comment">% for IFFT. The output of IFFT needs is then scaled by 1/M to get</span>
+    <span class="comment">% a correct function as a result.</span>
+    F = input .* M;
+    Mfunc = IFFT(F);
+    result = Mfunc ./ M;
+<span class="keyword">else</span>
+    <span class="comment">% In this case, the input is a function. The result of FFT is scaled</span>
+    <span class="comment">% by 1/M to change F into a FT.</span>
+    F = FFT(input);
+    result = F ./ M;
+<span class="keyword">end</span>
+
+    <span class="keyword">function</span> [F] = FFT(func)
+    <span class="comment">%FFT obtains a scaled FT, vector F, of a function.</span>
+    <span class="comment">%   [F]=FFT(FUNC) finds F, which is a scaled FT, corresponding to FUNC.</span>
+
+    N = length(func);
+
+
+    <span class="keyword">if</span> N == 1
+        <span class="comment">% in case length of F is 1, formula for F yields that F = func.</span>
+        F = func;
+    <span class="keyword">else</span>
+        <span class="comment">% uses the FFT recursive algorithm to reduce computation time</span>
+        Fodd = FFT(func(1:2:end));
+        Feven = FFT(func(2:2:end));
+
+        <span class="comment">% uses decomposition formulas for the Cooley-Tuckey algorithm</span>
+        w = exp(-2*pi*1i/N) .^ (0:N/2 - 1);
+        F = [Fodd + w .* Feven, Fodd - w .* Feven];
+    <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+    <span class="keyword">function</span> [func] = IFFT(F)
+    <span class="comment">%IFFT obtains a scaled function from a scaled FT.</span>
+    <span class="comment">%   [FUNC]=IFFT(F) finds FUNC, which is a scaled correct function,</span>
+    <span class="comment">%   corresponding to F, which is a scaled FT. There are only minor</span>
+    <span class="comment">%   changes in the IFFT compared to FFT.</span>
+    N = length(F);
+
+    <span class="keyword">if</span> N == 1
+        func = F;
+    <span class="keyword">else</span>
+        <span class="comment">% Uses the IFFT recursive algorithm.</span>
+        func_odd = IFFT(F(1:2:end));
+        func_even = IFFT(F(2:2:end));
+
+        <span class="comment">% Notice the exponents in W lack the minus sign compared to FFT.</span>
+        w = exp(2*pi*1i/N) .^ (0:N/2 - 1);
+        <span class="comment">% uses the composition formulas</span>
+        func = [func_odd + w .* func_even, func_odd - w .* func_even];
+    <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+<span class="keyword">end</span>
+</pre><pre class="codeoutput error">Not enough input arguments.
+
+Error in DFFT (line 16)
+M = length(input);
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [result] = DFFT(input,inverse)
+%DFFT applies the fast Fourier transform or its inverse to the input.
+%   [RESULT]=DFFT(INPUT, INVERSE) either finds the Fourier transform 
+%   RESULT of an L-periodic function INPUT when INVERSE = 0 or determines 
+%   a function RESULT from the Fourier transform INPUT when INVERSE = 1.
+%   
+%   The length of the input vector INPUT needs to be 2^N, where N is
+%   a positive integer.
+%   The input INVERSE is optional with the default value 0.
+
+% default inputs
+if nargin < 2
+    inverse = 0;
+end
+
+M = length(input);
+
+% if INVERSE = 1, IFFT is applied. Otherwise, FFT is applied.
+if inverse == 1
+    % In this case, the input is a FT that is scaled by M to get F suitable
+    % for IFFT. The output of IFFT needs is then scaled by 1/M to get 
+    % a correct function as a result.
+    F = input .* M;
+    Mfunc = IFFT(F);
+    result = Mfunc ./ M;
+else
+    % In this case, the input is a function. The result of FFT is scaled 
+    % by 1/M to change F into a FT.
+    F = FFT(input);
+    result = F ./ M;
+end
+    
+    function [F] = FFT(func)
+    %FFT obtains a scaled FT, vector F, of a function.
+    %   [F]=FFT(FUNC) finds F, which is a scaled FT, corresponding to FUNC.
+    
+    N = length(func);
+    
+    
+    if N == 1
+        % in case length of F is 1, formula for F yields that F = func.
+        F = func;
+    else
+        % uses the FFT recursive algorithm to reduce computation time
+        Fodd = FFT(func(1:2:end));
+        Feven = FFT(func(2:2:end));
+        
+        % uses decomposition formulas for the Cooley-Tuckey algorithm
+        w = exp(-2*pi*1i/N) .^ (0:N/2 - 1);
+        F = [Fodd + w .* Feven, Fodd - w .* Feven];
+    end
+    end
+
+    function [func] = IFFT(F)
+    %IFFT obtains a scaled function from a scaled FT.
+    %   [FUNC]=IFFT(F) finds FUNC, which is a scaled correct function, 
+    %   corresponding to F, which is a scaled FT. There are only minor
+    %   changes in the IFFT compared to FFT.
+    N = length(F);
+
+    if N == 1
+        func = F;
+    else
+        % Uses the IFFT recursive algorithm.
+        func_odd = IFFT(F(1:2:end));
+        func_even = IFFT(F(2:2:end));
+        
+        % Notice the exponents in W lack the minus sign compared to FFT.
+        w = exp(2*pi*1i/N) .^ (0:N/2 - 1);
+        % uses the composition formulas
+        func = [func_odd + w .* func_even, func_odd - w .* func_even];
+    end
+    end
+
+end
+##### SOURCE END #####
+--></body></html>
