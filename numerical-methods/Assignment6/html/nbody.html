@@ -1,0 +1,173 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>nbody</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-28"><meta name="DC.source" content="nbody.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">computing distances r between planets in XYZ plane</a></li><li><a href="#4">accelerations</a></li><li><a href="#5">velocities</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> [dx] = nbody(t,x)
+</pre><pre class="codeinput"><span class="keyword">global</span> G  m
+
+N = length(m); <span class="comment">% The number of bodies</span>
+dx = zeros(6*N,1); <span class="comment">% for each planet we need 6 equations: 3 for position, 3 for velocity;</span>
+</pre><h2 id="3">computing distances r between planets in XYZ plane</h2><pre class="codeinput">X=x(1:N);
+Y=x(N+1:2*N);
+Z=x(2*N+1:3*N);
+
+DX=distance(X); <span class="comment">% external function</span>
+DY=distance(Y);
+DZ=distance(Z);
+
+r=(DX.^2+DY.^2+DZ.^2).^0.5; <span class="comment">% matrix of distances between all masses</span>
+</pre><pre class="codeoutput error">Not enough input arguments.
+
+Error in nbody (line 8)
+X=x(1:N);
+</pre><h2 id="4">accelerations</h2><pre class="codeinput">   M=transpose(m*ones(1,N)); <span class="comment">% square matrix of masses, each row is m(i) repeated along columns (for next line)</span>
+   a=-G*M./r.^2; <span class="comment">% accelerations of each mass</span>
+
+   <span class="comment">% get rid of diagonal entries (Inf - forces on bodies on itself)</span>
+   a(1:N+1:N*N) = 0;
+
+   ax =a.* (DX./ r);
+   ay =a.* (DY./ r);
+   az =a.* (DZ./ r);
+
+   ax(1:N+1:N*N) = 0;
+   ay(1:N+1:N*N) = 0;
+   az(1:N+1:N*N) = 0;
+
+   <span class="comment">% net accel on mass m(i) -- adding all a's along column number (direction 2)</span>
+   a_sx=sum(ax,2)';
+   a_sy=sum(ay,2)';
+   a_sz=sum(az,2)';
+</pre><h2 id="5">velocities</h2><pre class="codeinput"><span class="comment">% Filling in the velocities from IC's</span>
+<span class="keyword">for</span> i = 1:3*N
+    dx(i) = x(3*N+i);    <span class="comment">% dx is [vx1 vx2...vxN vy1 vy2...vyN vz1 vz2...vzN ax1 ax2 ...axN ay...etc az...etc]</span>
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> i=1:N
+    dx(3*N+i)=a_sx(i)';
+    dx(4*N+i)=a_sy(i)';
+    dx(5*N+i)=a_sz(i)';
+<span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [dx] = nbody(t,x)
+global G  m 
+
+N = length(m); % The number of bodies
+dx = zeros(6*N,1); % for each planet we need 6 equations: 3 for position, 3 for velocity; 
+
+%% computing distances r between planets in XYZ plane
+X=x(1:N);
+Y=x(N+1:2*N);
+Z=x(2*N+1:3*N);
+
+DX=distance(X); % external function 
+DY=distance(Y);
+DZ=distance(Z);
+
+r=(DX.^2+DY.^2+DZ.^2).^0.5; % matrix of distances between all masses
+
+%% accelerations
+   M=transpose(m*ones(1,N)); % square matrix of masses, each row is m(i) repeated along columns (for next line)
+   a=-G*M./r.^2; % accelerations of each mass
+   
+   % get rid of diagonal entries (Inf - forces on bodies on itself)
+   a(1:N+1:N*N) = 0;
+    
+   ax =a.* (DX./ r);
+   ay =a.* (DY./ r);
+   az =a.* (DZ./ r);
+   
+   ax(1:N+1:N*N) = 0;
+   ay(1:N+1:N*N) = 0;
+   az(1:N+1:N*N) = 0;
+   
+   % net accel on mass m(i) REPLACE_WITH_DASH_DASH adding all a's along column number (direction 2)
+   a_sx=sum(ax,2)';
+   a_sy=sum(ay,2)';
+   a_sz=sum(az,2)';
+
+%% velocities
+
+% Filling in the velocities from IC's
+for i = 1:3*N
+    dx(i) = x(3*N+i);    % dx is [vx1 vx2...vxN vy1 vy2...vyN vz1 vz2...vzN ax1 ax2 ...axN ay...etc az...etc]
+end
+
+for i=1:N
+    dx(3*N+i)=a_sx(i)';
+    dx(4*N+i)=a_sy(i)';
+    dx(5*N+i)=a_sz(i)';
+end
+end
+
+
+
+##### SOURCE END #####
+--></body></html>

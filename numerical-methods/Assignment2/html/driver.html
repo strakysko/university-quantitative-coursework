@@ -1,0 +1,540 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Assignment 2</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-10-07"><meta name="DC.source" content="driver.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Assignment 2</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">THE SECANT METHOD</a></li><li><a href="#2">Approximates a zero of a function</a></li><li><a href="#3">Makes use of optional inputs</a></li><li><a href="#4">Gives additional outputs</a></li><li><a href="#5">Accepts functions with parameters</a></li><li><a href="#6">Condition(s) for the Secant Method to converge</a></li><li><a href="#7">Determination of orders of convergence between the Newton's Method and the Secant Method</a></li><li><a href="#8">Comparison of efficiency of the Secant and Newton's Method</a></li><li><a href="#9">THE MODIFIED NEWTON'S METHOD</a></li><li><a href="#10">Determines zero of a function</a></li><li><a href="#11">Approximates order of a zero in each iteration</a></li><li><a href="#12">Comparison of the Classical and Modified Newton's Method</a></li><li><a href="#13">Plots comparison of the Newton's Classical and Modified Method</a></li><li><a href="#14">REFERENCES</a></li></ul></div><h2 id="1">THE SECANT METHOD</h2><pre class="codeinput">clear <span class="string">all</span>, close <span class="string">all</span>, clc, format <span class="string">long</span>;
+</pre><h2 id="2">Approximates a zero of a function</h2><p>Secant approximates a zero of a function with the Secant Method until either the maximal number of iterations is reached or the tolerance is met. Let tolerance be the maximal difference of the last two iterates.</p><pre class="codeinput"><span class="comment">% I choose F and inputs, such that the zero of F is obvious (-2) and</span>
+<span class="comment">% the Secant Method converges to the actual zero.</span>
+f = @(x) x^3+x^2+4;
+zero = secant(f,3,5,100,1e-5)
+</pre><pre class="codeoutput">
+zero =
+
+  -1.999999998849046
+
+</pre><h2 id="3">Makes use of optional inputs</h2><p>The default optional inputs are the maximal number of iterations 100 and the minimal tolerance 1e-5.</p><pre class="codeinput"><span class="comment">% The optional arguments are left blank.</span>
+f = @(x) x^3+x^2+4;
+zero = secant(f,3,5)
+</pre><pre class="codeoutput">
+zero =
+
+  -1.999999998849046
+
+</pre><h2 id="4">Gives additional outputs</h2><pre class="codeinput">f = @(x) x^3+x^2+4;
+
+<span class="comment">% gives a vector X, which contains root approximations obtained</span>
+<span class="comment">% in the iterations</span>
+[~,x] = secant(f,3,5)
+
+<span class="comment">% gives a real number RES, which is an evaluation of a function F</span>
+<span class="comment">% at the approximated ZERO (This should be almost zero in a good approx.)</span>
+[~,~,res] = secant(f,3,5)
+
+<span class="comment">% gives a natural number NITER, which is either the maximal number</span>
+<span class="comment">% of iterations, in case a tolerance has not been met, or the number</span>
+<span class="comment">% of iterations needed to meet the tolerance.</span>
+[~,~,~,niter] = secant(f,3,5)
+</pre><pre class="codeoutput">
+x =
+
+   3.000000000000000
+   2.298245614035088
+   1.489135868491112
+   0.841942499011744
+   0.027090912938306
+  -2.471126364041517
+  -1.085398039066055
+  -1.693710136404077
+  -2.340843333437499
+  -1.936510168475282
+  -1.987960107678151
+  -2.000493532709543
+  -1.999996267908170
+  -1.999999998849046
+
+
+res =
+
+     9.207630213836637e-09
+
+
+niter =
+
+    13
+
+</pre><h2 id="5">Accepts functions with parameters</h2><p>An arbitrary number of parameters can be plugged into the function. For example, when P1 = 5 and P2 = 2, then a zero is approximated for a function with such parameters.</p><pre class="codeinput">f = @(x,p1,p2) p1*x^3+x^2/p2+4;
+zero = secant(f,3,5,100,1e-5,5,2)
+</pre><pre class="codeoutput">
+zero =
+
+  -0.962876622758200
+
+</pre><h2 id="6">Condition(s) for the Secant Method to converge</h2><p>For the Secant Method to converge, certain conditions need to be sufficed. The following sequence of zero approximations seems not to be converging.</p><pre class="codeinput"><span class="comment">% Only first 15 terms are shown for better readability.</span>
+f = @(x) (x-1)^2*(x-2)^2;
+[~,x] = secant(f,0.8,1.2,15,1e-5)
+</pre><pre class="codeoutput">The Secant Method stopped without achieving the desired tolerance because the maximum number of iterations was reached.
+
+x =
+
+   0.800000000000000
+   1.520000000000000
+  -8.023529411764633
+   1.520072678720178
+   1.520145356297737
+   4.623140107805011
+   1.518003766465852
+   1.515859294394197
+   5.204019651298044
+   1.514590927129583
+   1.513321731079773
+   5.988715012882999
+   1.512616194606500
+   1.511910443505705
+   6.605694502765223
+   1.511433332857928
+
+</pre><h2 id="7">Determination of orders of convergence between the Newton's Method and the Secant Method</h2><p>Under some conditions, there are typical orders of convergence for the Secant Method and for the Newton's Method. We are going to approximate and compare these orders of convergence. We can approximate an order of convergence with a formula <img src="driver_eq00944297285250676948.png" alt="$[1]$" style="width:12px;height:15px;">. For each of the methods, the corresponding formula converges to the order of convergence as the number of iterates in that method increases.</p><pre class="codeinput"><span class="comment">% Calculates iterates of both, the Secant Method and the Newton's Method,</span>
+<span class="comment">% for a given a function F.</span>
+f = @(x) x^3+x^2+4;
+[~,x] = secant(f,3,5,20,1e-10);
+[~,~,y] = newton(f,@(x) 3*x^2+2*x,-100,16,1e-10);
+
+<span class="comment">% This is the formula$[1]$.</span>
+formula = @(x1,x2,x3,x4) log(abs((x4 - x3) / (x3 - x2))) <span class="keyword">...</span>
+        / log(abs((x3 - x2) / (x2 - x1)));
+
+<span class="comment">% As i increases, the approximation of the order approaches the actual</span>
+<span class="comment">% order of convergence. We know this from the formula explanation$[1]$.</span>
+<span class="keyword">for</span> i = 4:length(x)
+    orderSecant(i-3) = formula(x(i-3),x(i-2),x(i-1),x(i));
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> i = 4:length(y)
+    orderNewton(i-3) = formula(y(i-3),y(i-2),y(i-1),y(i));
+<span class="keyword">end</span>
+
+<span class="comment">% Makes a plot of the iterates approaching the order of convergence for</span>
+<span class="comment">% each method.</span>
+figure(1);
+x_axis = 1:length(x)-3;
+y_axis = 1:length(y)-3;
+plot(x_axis,orderSecant,<span class="string">'-.'</span>,y_axis,orderNewton,<span class="string">'-*'</span>);
+xlabel(<span class="string">'Number of iterations of the formula.'</span>);
+ylabel(<span class="string">'Approximated order of convergence.'</span>);
+title(<span class="string">'Plot of sequences converging to corresponding order of convergence.'</span>);
+xticks(0:14);
+yticks([-8:1, 1.6, 2:6]);
+legend({<span class="string">'Secant Method'</span>,<span class="string">'Newton''s Method'</span>},<span class="string">'Location'</span>,<span class="string">'southwest'</span>)
+width=700;
+height=700;
+set(figure(1),<span class="string">'position'</span>,[0,0,width,height])
+grid <span class="string">on</span>;
+
+<span class="comment">% According to the plot, the approximated orders of convergence are</span>
+<span class="comment">% 2 and 1.6 for the Newton's and Secant Method, respectively.</span>
+<span class="comment">% Actually, we know more exact values from previous calculations.</span>
+orderOfConvergenceSecant = orderSecant(length(x)-3)
+orderOfConvergenceNewton = orderNewton(length(y)-3)
+</pre><pre class="codeoutput">
+orderOfConvergenceSecant =
+
+   1.605190401054732
+
+
+orderOfConvergenceNewton =
+
+   2.000166313389003
+
+</pre><img vspace="5" hspace="5" src="driver_01.png" alt=""> <h2 id="8">Comparison of efficiency of the Secant and Newton's Method</h2><p>The previous observation is in agreement with the theoretical values for the orders of convergence of the Secant and Newton's Method. Under certain conditions, the Newton's Method should converge quadratically. The Secant Method should converge sublinearly with the order of convergence equal to the golden ratio (~1.618). Therefore, assuminng those certain conditions are met and the derivative of a function is known, it is more efficient to use the Newton's Method than the Secant Method because of faster convergence. Otherwise, when the derivative of a function is unknown or we observe higher order of convergence for the Secant than for the Newton's Method, we should opt for using the Secant Method.</p><h2 id="9">THE MODIFIED NEWTON'S METHOD</h2><pre class="codeinput">clear <span class="string">all</span>; close <span class="string">all</span>; clc;
+</pre><h2 id="10">Determines zero of a function</h2><p>For a given function F and its derivative DF, modified approximates a zero closest to the guess GUESS of the zero.</p><pre class="codeinput">f = @(x) (x^2-1)^2*log(x);
+df = @(x) 4*x*(x^2-1)*log(x)+(x^2-1)^2/x;
+guess = 2.8;
+
+<span class="comment">% The actual zero is 1.</span>
+zero = modified(f,df,guess)
+</pre><pre class="codeoutput">
+zero =
+
+   0.999999999984530
+
+</pre><h2 id="11">Approximates order of a zero in each iteration</h2><p>The function modified approximates order of a zero in each iteration. The resulting output is a vector M consisting of the approximations in each iteration. If it is approximated in an iteration that the order of a zero is less than one, we assume the order of the zero to be one. The approximation of the order of the zero converges to the actual order of a zero as the number of iterations increases.</p><pre class="codeinput"><span class="comment">% The actual order of the zero is 3.</span>
+[~,~,~,~,M] = modified(f,df,guess)
+</pre><pre class="codeoutput">
+M =
+
+   1.000000000000000
+   1.000000000000000
+   3.877295443373687
+   1.000000000000000
+   1.000000000000000
+   2.882460675255292
+   1.000000000000000
+   1.010131935881849
+   3.060483900480464
+   1.000000000000000
+   1.000000000000000
+   3.000013341120546
+   1.000000000000000
+
+</pre><h2 id="12">Comparison of the Classical and Modified Newton's Method</h2><p>We can check how many iterations it takes for each method to achieve the demanded tolerance. We can observe that the number of iterates needed for the Modified Method to achieve the tolerance is much less than the number of iterates needed for the Classical Method to achieve the tolerance.</p><pre class="codeinput"><span class="comment">% Gets iterates converging to zero from both methods</span>
+[~,x] = modified(f,df,guess)
+[~,~,y] = newton(f,df,guess,100,1e-10)
+
+
+<span class="comment">% To achieve the tolerance 1e-10, we need the following number of iterates</span>
+<span class="comment">% of each method.</span>
+neededIteratesModified = length(x) - 1
+neededIteratesClassical = length(y) - 1
+</pre><pre class="codeoutput">
+x =
+
+   2.800000000000000
+   2.296042854379792
+   1.922062171213966
+   0.859719078461928
+   0.907618295594678
+   0.938900038100993
+   0.998215668572150
+   0.998810622699801
+   0.999211178115680
+   1.000016009500112
+   1.000010673014314
+   1.000007115349204
+   0.999999999976796
+   0.999999999984530
+
+
+y =
+
+   2.800000000000000
+   2.296042854379792
+   1.922062171213966
+   1.648071419601889
+   1.450280486716042
+   1.309686384991990
+   1.211205179782288
+   1.143097786366521
+   1.096479388165180
+   1.064819492326116
+   1.043441237921576
+   1.029064119445357
+   1.019422547991904
+   1.012969185923885
+   1.008655427733317
+   1.005774435120745
+   1.003851472288151
+   1.002568471234240
+   1.001712680344447
+   1.001141949762851
+   1.000761372261489
+   1.000507613704356
+   1.000338423448908
+   1.000225621994689
+   1.000150417490985
+   1.000100279584228
+   1.000066853614800
+   1.000044569324828
+   1.000029712993574
+   1.000019808711430
+   1.000013205829419
+   1.000008803895968
+   1.000005869268285
+   1.000003912847437
+   1.000002608565808
+   1.000001739044250
+   1.000001159363002
+   1.000000772908742
+   1.000000515272528
+   1.000000343515034
+   1.000000229010029
+   1.000000152673356
+   1.000000101782238
+   1.000000067854826
+   1.000000045236551
+   1.000000030157701
+   1.000000020105134
+   1.000000013403423
+   1.000000008935615
+   1.000000005957077
+   1.000000003971385
+   1.000000002647590
+   1.000000001765060
+   1.000000001176707
+   1.000000000784471
+   1.000000000522981
+   1.000000000348654
+   1.000000000232436
+   1.000000000154957
+
+
+neededIteratesModified =
+
+    13
+
+
+neededIteratesClassical =
+
+    58
+
+</pre><h2 id="13">Plots comparison of the Newton's Classical and Modified Method</h2><p>We get a graph that shows iterates of both methods in one plot to see which of the methods converges to the zero faster. The method that converges faster has a bigger order of convergence than the other method. In this cae, when f has a zero with multiplicity 3, the Modified Newton's Method converges faster than the Newton's Method. Thus, the Modified Newton's Method has a higher order of convergence than the Newton's Method.</p><pre class="codeinput"><span class="comment">% We plot the calculated values from above</span>
+x_axis = 1:length(x);       y_axis = 1:length(y);
+plot(x_axis,x,<span class="string">'-.'</span>,y_axis,y,<span class="string">'-*'</span>);
+xlabel(<span class="string">'Number of iterations of a method.'</span>);
+ylabel(<span class="string">'Approximations of a zero.'</span>);
+title(<span class="string">'Plot of generated sequences converging to a zero of a function.'</span>);
+legend({<span class="string">'Modified Method'</span>,<span class="string">'Classica Method'</span>},<span class="string">'Location'</span>,<span class="string">'northeast'</span>)
+width=700;      height=700;     grid <span class="string">on</span>;
+</pre><img vspace="5" hspace="5" src="driver_02.png" alt=""> <h2 id="14">REFERENCES</h2><p><img src="driver_eq00944297285250676948.png" alt="$[1]$" style="width:12px;height:15px;"> Senning, Jonathan R. "Computing and Estimating the Rate of Convergence" (PDF). gordon.edu. Retrieved 2020-08-07</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Assignment 2
+
+
+%% THE SECANT METHOD
+clear all, close all, clc, format long;
+
+%% Approximates a zero of a function
+% Secant approximates a zero of a function with the Secant Method until 
+% either the maximal number of iterations is reached or the tolerance is 
+% met. Let tolerance be the maximal difference of the last two iterates.
+
+% I choose F and inputs, such that the zero of F is obvious (-2) and 
+% the Secant Method converges to the actual zero.
+f = @(x) x^3+x^2+4; 
+zero = secant(f,3,5,100,1e-5)
+
+%% Makes use of optional inputs
+% The default optional inputs are the maximal number of iterations 100 
+% and the minimal tolerance 1e-5.
+
+% The optional arguments are left blank.
+f = @(x) x^3+x^2+4;
+zero = secant(f,3,5)
+
+%% Gives additional outputs
+
+f = @(x) x^3+x^2+4;
+
+% gives a vector X, which contains root approximations obtained
+% in the iterations
+[~,x] = secant(f,3,5)
+
+% gives a real number RES, which is an evaluation of a function F 
+% at the approximated ZERO (This should be almost zero in a good approx.)
+[~,~,res] = secant(f,3,5)
+
+% gives a natural number NITER, which is either the maximal number
+% of iterations, in case a tolerance has not been met, or the number
+% of iterations needed to meet the tolerance.
+[~,~,~,niter] = secant(f,3,5)
+
+%% Accepts functions with parameters
+% An arbitrary number of parameters can be plugged into the function.
+% For example, when P1 = 5 and P2 = 2, then a zero is approximated 
+% for a function with such parameters.
+
+f = @(x,p1,p2) p1*x^3+x^2/p2+4;
+zero = secant(f,3,5,100,1e-5,5,2)
+
+%% Condition(s) for the Secant Method to converge
+% For the Secant Method to converge, certain conditions need to be sufficed.
+% The following sequence of zero approximations seems not to be converging. 
+
+% Only first 15 terms are shown for better readability.
+f = @(x) (x-1)^2*(x-2)^2; 
+[~,x] = secant(f,0.8,1.2,15,1e-5)
+
+%% Determination of orders of convergence between the Newton's Method and the Secant Method
+% Under some conditions, there are typical orders of convergence
+% for the Secant Method and for the Newton's Method. We are going 
+% to approximate and compare these orders of convergence. We can approximate 
+% an order of convergence with a formula $[1]$. For each of the methods,
+% the corresponding formula converges to the order of convergence as the 
+% number of iterates in that method increases. 
+
+% Calculates iterates of both, the Secant Method and the Newton's Method, 
+% for a given a function F.
+f = @(x) x^3+x^2+4; 
+[~,x] = secant(f,3,5,20,1e-10);
+[~,~,y] = newton(f,@(x) 3*x^2+2*x,-100,16,1e-10);
+
+% This is the formula$[1]$.
+formula = @(x1,x2,x3,x4) log(abs((x4 - x3) / (x3 - x2))) ...
+        / log(abs((x3 - x2) / (x2 - x1)));
+
+% As i increases, the approximation of the order approaches the actual
+% order of convergence. We know this from the formula explanation$[1]$.
+for i = 4:length(x)
+    orderSecant(i-3) = formula(x(i-3),x(i-2),x(i-1),x(i));
+end
+
+for i = 4:length(y)
+    orderNewton(i-3) = formula(y(i-3),y(i-2),y(i-1),y(i));
+end
+
+% Makes a plot of the iterates approaching the order of convergence for
+% each method.
+figure(1);
+x_axis = 1:length(x)-3;
+y_axis = 1:length(y)-3;
+plot(x_axis,orderSecant,'-.',y_axis,orderNewton,'-*');
+xlabel('Number of iterations of the formula.');
+ylabel('Approximated order of convergence.');
+title('Plot of sequences converging to corresponding order of convergence.');
+xticks(0:14);
+yticks([-8:1, 1.6, 2:6]);
+legend({'Secant Method','Newton''s Method'},'Location','southwest')
+width=700;
+height=700;
+set(figure(1),'position',[0,0,width,height])
+grid on;
+
+% According to the plot, the approximated orders of convergence are
+% 2 and 1.6 for the Newton's and Secant Method, respectively. 
+% Actually, we know more exact values from previous calculations.
+orderOfConvergenceSecant = orderSecant(length(x)-3)
+orderOfConvergenceNewton = orderNewton(length(y)-3)
+
+
+%% Comparison of efficiency of the Secant and Newton's Method
+% The previous observation is in agreement with the theoretical values for the
+% orders of convergence of the Secant and Newton's Method. Under certain 
+% conditions, the Newton's Method should converge quadratically. The
+% Secant Method should converge sublinearly with the order of convergence
+% equal to the golden ratio (~1.618). Therefore, assuminng those certain
+% conditions are met and the derivative of a function is known, it is more 
+% efficient to use the Newton's Method than the Secant Method because of
+% faster convergence. Otherwise, when the derivative of a function is
+% unknown or we observe higher order of convergence for the Secant than for
+% the Newton's Method, we should opt for using the Secant Method.
+
+
+%% THE MODIFIED NEWTON'S METHOD
+clear all; close all; clc; 
+
+%% Determines zero of a function
+% For a given function F and its derivative DF, modified approximates a
+% zero closest to the guess GUESS of the zero.
+f = @(x) (x^2-1)^2*log(x);
+df = @(x) 4*x*(x^2-1)*log(x)+(x^2-1)^2/x;
+guess = 2.8;
+
+% The actual zero is 1.
+zero = modified(f,df,guess)
+
+%% Approximates order of a zero in each iteration
+% The function modified approximates order of a zero in each iteration. The
+% resulting output is a vector M consisting of the approximations in each
+% iteration. If it is approximated in an iteration that the order of a zero
+% is less than one, we assume the order of the zero to be one. The
+% approximation of the order of the zero converges to the actual order 
+% of a zero as the number of iterations increases.
+
+% The actual order of the zero is 3.
+[~,~,~,~,M] = modified(f,df,guess)
+
+%% Comparison of the Classical and Modified Newton's Method
+% We can check how many iterations it takes for each method to achieve the
+% demanded tolerance. We can observe that the number of iterates needed for
+% the Modified Method to achieve the tolerance is much less than the number
+% of iterates needed for the Classical Method to achieve the tolerance.
+
+% Gets iterates converging to zero from both methods
+[~,x] = modified(f,df,guess)
+[~,~,y] = newton(f,df,guess,100,1e-10)
+
+
+% To achieve the tolerance 1e-10, we need the following number of iterates
+% of each method.
+neededIteratesModified = length(x) - 1
+neededIteratesClassical = length(y) - 1
+
+
+%% Plots comparison of the Newton's Classical and Modified Method
+% We get a graph that shows iterates of both methods in one plot to see
+% which of the methods converges to the zero faster. The method that
+% converges faster has a bigger order of convergence than the other method.
+% In this cae, when f has a zero with multiplicity 3, the Modified Newton's
+% Method converges faster than the Newton's Method. Thus, the Modified
+% Newton's Method has a higher order of convergence than the Newton's
+% Method.
+
+% We plot the calculated values from above
+x_axis = 1:length(x);       y_axis = 1:length(y);
+plot(x_axis,x,'-.',y_axis,y,'-*');
+xlabel('Number of iterations of a method.');
+ylabel('Approximations of a zero.');
+title('Plot of generated sequences converging to a zero of a function.');
+legend({'Modified Method','Classica Method'},'Location','northeast')
+width=700;      height=700;     grid on;
+
+
+%% REFERENCES
+% $[1]$ Senning, Jonathan R. "Computing and Estimating the Rate
+% of Convergence" (PDF). gordon.edu. Retrieved 2020-08-07
+##### SOURCE END #####
+--></body></html>

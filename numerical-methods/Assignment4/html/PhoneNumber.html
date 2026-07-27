@@ -1,0 +1,301 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>PhoneNumber</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-11-23"><meta name="DC.source" content="PhoneNumber.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span> [number]=PhoneNumber(signal,rate)
+<span class="comment">%PHONENUMBER converts signal into a number.</span>
+<span class="comment">%   [NUMBER]=PHONENUMBER(SIGNAL, RATE) uses fft to convert signal</span>
+<span class="comment">%   consisting of linear combinations of two sines and noise into a number.</span>
+<span class="comment">%   RATE is the sampling rate.</span>
+
+<span class="comment">% separates the signal into sections with length LENGTHOFCHECK</span>
+lengthOfCheck = 20;
+L = length(signal) / lengthOfCheck;
+
+<span class="comment">% checks every such section as mentioned above</span>
+digitSignal = [];
+number = [];
+<span class="keyword">for</span> i = 0:floor(L)-1
+    values = signal(lengthOfCheck*i+1 : lengthOfCheck*(i+1));
+
+    <span class="comment">% if the average of values in a particular section is above 0.2, then</span>
+    <span class="comment">% that section is connected with other neighboring sections chich are</span>
+    <span class="comment">% also above 0.2 on average</span>
+    <span class="comment">% these sections together form a digit</span>
+    <span class="comment">% if the average is below 0.2, then such a section is ignored (this</span>
+    <span class="comment">% can also mean an end of a digit)</span>
+    <span class="keyword">if</span> mean(abs(values)) &gt; 0.2
+        digitSignal = [digitSignal; values];
+    <span class="keyword">elseif</span> ~isempty(digitSignal)
+        newDigit = findDigit(digitSignal);
+        number = [number, newDigit];
+        digitSignal = [];
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+    <span class="keyword">function</span> [digit] = findDigit(digitSignal)
+        <span class="comment">% converts signal, corresponding to one digit, into a digit</span>
+
+        <span class="comment">% converts the signal into Fourier transform</span>
+        <span class="comment">% disregards the mirrored part of Fourier transforms</span>
+        N = length(digitSignal);
+        y = abs(fft(digitSignal)*2/N);
+        y = y(1:N/2+1);
+        f = (0:N/2)*rate/N;
+
+        <span class="comment">% finds frequencies related to two greatest Fourier coefficients</span>
+        <span class="comment">% gets rid of noise in this way</span>
+        widthOfPeak = 10;
+
+        [~,idx] = max(y);
+        frequency1 = f(idx);
+
+        <span class="comment">% deletes the maximal Fourier transform and neighboring values so</span>
+        <span class="comment">% that the second highest FT becomes maximal</span>
+        y(idx-widthOfPeak : idx+widthOfPeak) = <span class="keyword">...</span>
+            zeros([1 length(y(idx-widthOfPeak : idx+widthOfPeak))]);
+
+        [~,idx] = max(y);
+        frequency2 = f(idx);
+
+        <span class="comment">% determines which found frequency is greater</span>
+        <span class="keyword">if</span> frequency1 &lt; frequency2
+            higherFrequency = frequency2;
+            lowerFrequency = frequency1;
+        <span class="keyword">else</span>
+            higherFrequency = frequency1;
+            lowerFrequency = frequency2;
+        <span class="keyword">end</span>
+
+        <span class="comment">% relates determined frequencies with the frequencies in the table</span>
+        b=[1209 1336 1477];
+        [~,idx]=min(abs(b-higherFrequency));
+        highFrequency = b(idx);
+
+        a=[697 770 852 941];
+        [~,idx]=min(abs(a-lowerFrequency));
+        lowFrequency = a(idx);
+
+        <span class="comment">% determines the digit related to the combination of frequencies</span>
+        <span class="comment">% from the table</span>
+        <span class="keyword">if</span> highFrequency == 1209
+            <span class="keyword">if</span> lowFrequency == 697
+                digit = 1;
+            <span class="keyword">elseif</span> lowFrequency == 770
+                digit = 4;
+            <span class="keyword">elseif</span> lowFrequency == 852
+                digit = 7;
+            <span class="keyword">else</span>
+                digit = <span class="string">"*"</span>;
+            <span class="keyword">end</span>
+        <span class="keyword">elseif</span> highFrequency == 1336
+            <span class="keyword">if</span> lowFrequency == 697
+                digit = 2;
+            <span class="keyword">elseif</span> lowFrequency == 770
+                digit = 5;
+            <span class="keyword">elseif</span> lowFrequency == 852
+                digit = 8;
+            <span class="keyword">else</span>
+                digit = 0;
+            <span class="keyword">end</span>
+        <span class="keyword">else</span>
+            <span class="keyword">if</span> lowFrequency == 697
+                digit = 3;
+            <span class="keyword">elseif</span> lowFrequency == 770
+                digit = 6;
+            <span class="keyword">elseif</span> lowFrequency == 852
+                digit = 9;
+            <span class="keyword">else</span>
+                digit = <span class="string">"#"</span>;
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+
+    <span class="keyword">end</span>
+
+<span class="keyword">end</span>
+</pre><pre class="codeoutput error">Not enough input arguments.
+
+Error in PhoneNumber (line 9)
+L = length(signal) / lengthOfCheck;
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [number]=PhoneNumber(signal,rate)
+%PHONENUMBER converts signal into a number.
+%   [NUMBER]=PHONENUMBER(SIGNAL, RATE) uses fft to convert signal
+%   consisting of linear combinations of two sines and noise into a number.
+%   RATE is the sampling rate.
+
+% separates the signal into sections with length LENGTHOFCHECK
+lengthOfCheck = 20;
+L = length(signal) / lengthOfCheck;
+
+% checks every such section as mentioned above
+digitSignal = [];
+number = [];
+for i = 0:floor(L)-1
+    values = signal(lengthOfCheck*i+1 : lengthOfCheck*(i+1));
+    
+    % if the average of values in a particular section is above 0.2, then
+    % that section is connected with other neighboring sections chich are
+    % also above 0.2 on average
+    % these sections together form a digit
+    % if the average is below 0.2, then such a section is ignored (this
+    % can also mean an end of a digit)
+    if mean(abs(values)) > 0.2
+        digitSignal = [digitSignal; values];
+    elseif ~isempty(digitSignal)
+        newDigit = findDigit(digitSignal);
+        number = [number, newDigit];
+        digitSignal = [];
+    end
+end
+
+
+    function [digit] = findDigit(digitSignal)
+        % converts signal, corresponding to one digit, into a digit
+        
+        % converts the signal into Fourier transform
+        % disregards the mirrored part of Fourier transforms
+        N = length(digitSignal);
+        y = abs(fft(digitSignal)*2/N);
+        y = y(1:N/2+1);
+        f = (0:N/2)*rate/N;
+        
+        % finds frequencies related to two greatest Fourier coefficients
+        % gets rid of noise in this way
+        widthOfPeak = 10;
+       
+        [~,idx] = max(y);
+        frequency1 = f(idx);
+        
+        % deletes the maximal Fourier transform and neighboring values so
+        % that the second highest FT becomes maximal
+        y(idx-widthOfPeak : idx+widthOfPeak) = ...
+            zeros([1 length(y(idx-widthOfPeak : idx+widthOfPeak))]);
+        
+        [~,idx] = max(y);
+        frequency2 = f(idx);
+        
+        % determines which found frequency is greater
+        if frequency1 < frequency2
+            higherFrequency = frequency2;
+            lowerFrequency = frequency1;
+        else
+            higherFrequency = frequency1;
+            lowerFrequency = frequency2;
+        end
+        
+        % relates determined frequencies with the frequencies in the table
+        b=[1209 1336 1477];
+        [~,idx]=min(abs(b-higherFrequency));
+        highFrequency = b(idx);
+        
+        a=[697 770 852 941];
+        [~,idx]=min(abs(a-lowerFrequency));
+        lowFrequency = a(idx);
+        
+        % determines the digit related to the combination of frequencies
+        % from the table
+        if highFrequency == 1209
+            if lowFrequency == 697
+                digit = 1;
+            elseif lowFrequency == 770
+                digit = 4;
+            elseif lowFrequency == 852
+                digit = 7;
+            else
+                digit = "*";
+            end
+        elseif highFrequency == 1336
+            if lowFrequency == 697
+                digit = 2;
+            elseif lowFrequency == 770
+                digit = 5;
+            elseif lowFrequency == 852
+                digit = 8;
+            else
+                digit = 0;
+            end
+        else
+            if lowFrequency == 697
+                digit = 3;
+            elseif lowFrequency == 770
+                digit = 6;
+            elseif lowFrequency == 852
+                digit = 9;
+            else
+                digit = "#";
+            end
+        end
+        
+    end
+
+end
+##### SOURCE END #####
+--></body></html>

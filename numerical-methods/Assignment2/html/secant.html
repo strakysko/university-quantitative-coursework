@@ -1,0 +1,229 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>secant</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-10-07"><meta name="DC.source" content="secant.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span> [zero,x,res,niter]=secant(fun,x1,x0,nmax,tol,varargin)
+<span class="comment">%SECANT Finds function zeros.</span>
+<span class="comment">% ZERO=SECANT(FUN,X1,X0,NMAX,TOL,P1,P2,...) tries to find the</span>
+<span class="comment">% zero ZERO of the continuous and differentiable</span>
+<span class="comment">% function FUN nearest to a real number X1 using the Secant Method.</span>
+<span class="comment">% FUN accepts a function handle with real numbers and parameters P1, P2,...</span>
+<span class="comment">% The real number X0 is another x in the domain of FUN, such that X0 is</span>
+<span class="comment">% close to the zero to be found. Inputs X1 and X0 need to be sufficiently</span>
+<span class="comment">% close to the zero, which we want to approximate, for Secant to converge.</span>
+<span class="comment">% The positive integer NMAX determines the maximal number of iterations of the Secant</span>
+<span class="comment">% Method. The tolerance TOL is defined as the distance of two last iterates</span>
+<span class="comment">% in the sequence produced by the Secant Method. The Secant Method iterates</span>
+<span class="comment">% until the tolerance TOL or the maximal number of iterations NMAX is reached.</span>
+<span class="comment">% If NMAX is reached, without TOL being met, then a failor message shows up.</span>
+<span class="comment">%</span>
+<span class="comment">% [ZERO,X,RES,NMAX]=SECANT(FUN,...) returns an approximation ZERO of a zero,</span>
+<span class="comment">% a column vector X consisting of approximations of zero for each iteration</span>
+<span class="comment">% of the Secant Method, the residual RES in ZERO and the iteration number</span>
+<span class="comment">% NITER at which ZERO was computed. Assuming the toleration was met.</span>
+<span class="comment">%</span>
+<span class="comment">% ZERO=SECANT(FUN,X1,X0) approximates a zero of a function FUN with</span>
+<span class="comment">% default arguments TOL=1e-5 and NMAX = 100.</span>
+
+format <span class="string">long</span>;
+
+<span class="comment">% default values</span>
+<span class="keyword">if</span> nargin &lt; 4
+    nmax = 100;
+    tol = 1e-5;
+<span class="keyword">elseif</span> nargin &lt; 5
+    tol = 1e-5;
+<span class="keyword">end</span>
+
+<span class="comment">% Error check on NMAX</span>
+<span class="keyword">if</span> (nmax&lt;0)
+  error(<span class="string">'Error in secant.m: NMAX should be a positive integer.'</span>);
+<span class="keyword">end</span>
+
+<span class="comment">% Error check on TOL</span>
+<span class="keyword">if</span> tol&lt;eps
+  msg = sprintf(<span class="string">'Error in secant.m: TOL should be a positive number greater than or equal to %e'</span>,eps);
+  error(msg');
+<span class="keyword">end</span>
+
+<span class="comment">% determines the initial values</span>
+niter = 0;      diff = tol+1;       x(niter+1) = x1;
+
+<span class="comment">% Iterator repeating until the tolerance TOL or number of iterations NITER</span>
+<span class="comment">% is reached.</span>
+<span class="keyword">while</span> diff &gt;= tol &amp; niter &lt; nmax
+    niter = niter + 1;
+    fx0 = feval(fun,x0,varargin{:});
+    fx1 = feval(fun,x1,varargin{:});
+    dfx = (fx1 - fx0)/(x1 - x0);
+
+    <span class="keyword">if</span> (dfx == 0)
+        disp(<span class="string">'Stopped due to vanishing derivative.'</span>);
+        <span class="keyword">return</span>;
+    <span class="keyword">end</span>
+
+    diff = - fx1/dfx;       x0 = x1;
+    x1 = x1 + diff;         x(niter+1) = x1;
+    diff = abs(diff);
+<span class="keyword">end</span>
+
+<span class="comment">% The failor message that shows up when the tolerance TOL is not reached in</span>
+<span class="comment">% NITER iterations.</span>
+<span class="keyword">if</span> (niter==nmax &amp; diff &gt; tol)
+    fprintf([<span class="string">'The Secant Method stopped without achieving'</span>,<span class="keyword">...</span>
+    <span class="string">' the desired tolerance because the maximum '</span>,<span class="keyword">...</span>
+    <span class="string">'number of iterations was reached.\n'</span>]);
+<span class="keyword">end</span>
+
+<span class="comment">% Defines outputs</span>
+zero = x1; res = feval(fun,x1,varargin{:}); x = x';
+<span class="keyword">return</span>
+</pre><pre class="codeoutput error">Not enough input arguments.
+
+Error in secant (line 46)
+niter = 0;      diff = tol+1;       x(niter+1) = x1;
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [zero,x,res,niter]=secant(fun,x1,x0,nmax,tol,varargin)
+%SECANT Finds function zeros.
+% ZERO=SECANT(FUN,X1,X0,NMAX,TOL,P1,P2,...) tries to find the
+% zero ZERO of the continuous and differentiable
+% function FUN nearest to a real number X1 using the Secant Method.
+% FUN accepts a function handle with real numbers and parameters P1, P2,...
+% The real number X0 is another x in the domain of FUN, such that X0 is
+% close to the zero to be found. Inputs X1 and X0 need to be sufficiently
+% close to the zero, which we want to approximate, for Secant to converge.
+% The positive integer NMAX determines the maximal number of iterations of the Secant
+% Method. The tolerance TOL is defined as the distance of two last iterates
+% in the sequence produced by the Secant Method. The Secant Method iterates
+% until the tolerance TOL or the maximal number of iterations NMAX is reached.
+% If NMAX is reached, without TOL being met, then a failor message shows up.
+%
+% [ZERO,X,RES,NMAX]=SECANT(FUN,...) returns an approximation ZERO of a zero,
+% a column vector X consisting of approximations of zero for each iteration
+% of the Secant Method, the residual RES in ZERO and the iteration number 
+% NITER at which ZERO was computed. Assuming the toleration was met.
+%
+% ZERO=SECANT(FUN,X1,X0) approximates a zero of a function FUN with
+% default arguments TOL=1e-5 and NMAX = 100.
+
+format long;
+
+% default values
+if nargin < 4
+    nmax = 100;
+    tol = 1e-5;
+elseif nargin < 5
+    tol = 1e-5;
+end
+
+% Error check on NMAX
+if (nmax<0)
+  error('Error in secant.m: NMAX should be a positive integer.');
+end
+
+% Error check on TOL
+if tol<eps
+  msg = sprintf('Error in secant.m: TOL should be a positive number greater than or equal to %e',eps);
+  error(msg');
+end
+
+% determines the initial values
+niter = 0;      diff = tol+1;       x(niter+1) = x1;
+
+% Iterator repeating until the tolerance TOL or number of iterations NITER
+% is reached.
+while diff >= tol & niter < nmax
+    niter = niter + 1;
+    fx0 = feval(fun,x0,varargin{:});
+    fx1 = feval(fun,x1,varargin{:});
+    dfx = (fx1 - fx0)/(x1 - x0);
+    
+    if (dfx == 0)
+        disp('Stopped due to vanishing derivative.');
+        return; 
+    end
+    
+    diff = - fx1/dfx;       x0 = x1;
+    x1 = x1 + diff;         x(niter+1) = x1; 
+    diff = abs(diff);
+end
+
+% The failor message that shows up when the tolerance TOL is not reached in
+% NITER iterations.
+if (niter==nmax & diff > tol)
+    fprintf(['The Secant Method stopped without achieving',...
+    ' the desired tolerance because the maximum ',...
+    'number of iterations was reached.\n']);
+end
+
+% Defines outputs
+zero = x1; res = feval(fun,x1,varargin{:}); x = x';
+return
+##### SOURCE END #####
+--></body></html>

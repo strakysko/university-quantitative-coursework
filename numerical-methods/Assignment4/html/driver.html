@@ -1,0 +1,354 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Assignment IV</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-11-23"><meta name="DC.source" content="driver.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Assignment IV</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Exercise 1 - Discrete Fast Fourier Transform</a></li><li><a href="#7">Exercise 2 - Phone Number</a></li></ul></div><h2 id="1">Exercise 1 - Discrete Fast Fourier Transform</h2><p>This section presents the function DFFT, which either determines Fourier transform of a periodic function or determines a function from a corresponding Fourier transform.</p><p>In addition, functions derivative and convolute use the function DFFT for calculating a derivative of a function and convolution of two periodic functions, respectively.</p><pre class="codeinput">format <span class="string">long</span>;
+</pre><p>Compares our function DFFT and fft.</p><pre class="codeinput"><span class="comment">% discretizes function sin(x)</span>
+N = 2^3;
+L = 2*pi;
+x = (0:N-1)*(L/N);
+func = sin(x);
+
+<span class="comment">% checks whether our function DFFT gives the same result as fft</span>
+FT1 = DFFT(func)'
+FT2 = (fft(func)./N)'
+true = isequal(round(FT1,5),round(FT2,5))
+
+<span class="comment">% As you can see below our function DFFT and the built-in function fft give</span>
+<span class="comment">% the same results.</span>
+</pre><pre class="codeoutput">
+FT1 =
+
+  0.000000000000000 + 0.000000000000000i
+ -0.000000000000000 + 0.500000000000000i
+  0.000000000000000 + 0.000000000000000i
+  0.000000000000000 + 0.000000000000000i
+  0.000000000000000 + 0.000000000000000i
+  0.000000000000000 + 0.000000000000000i
+  0.000000000000000 - 0.000000000000000i
+ -0.000000000000000 - 0.500000000000000i
+
+
+FT2 =
+
+  0.000000000000000 + 0.000000000000000i
+ -0.000000000000000 + 0.500000000000000i
+  0.000000000000000 + 0.000000000000000i
+  0.000000000000000 + 0.000000000000000i
+  0.000000000000000 + 0.000000000000000i
+  0.000000000000000 - 0.000000000000000i
+  0.000000000000000 - 0.000000000000000i
+ -0.000000000000000 - 0.500000000000000i
+
+
+true =
+
+  logical
+
+   1
+
+</pre><p>Compares our function DFFT with ifft.</p><pre class="codeinput"><span class="comment">% checks whether our function DFFT gives the same result as ifft</span>
+func1 = DFFT(FT1,1)'
+func2 = ifft(FT2.*N)
+true = isequal(round(func1,5),round(func2,5))
+
+<span class="comment">% As you can see below our function DFFT and the built-in function ifft give</span>
+<span class="comment">% the same results.</span>
+</pre><pre class="codeoutput">
+func1 =
+
+  0.000000000000000 + 0.000000000000000i
+ -0.707106781186548 - 0.000000000000000i
+ -1.000000000000000 - 0.000000000000000i
+ -0.707106781186547 - 0.000000000000000i
+  0.000000000000000 + 0.000000000000000i
+  0.707106781186548 + 0.000000000000000i
+  1.000000000000000 + 0.000000000000000i
+  0.707106781186547 + 0.000000000000000i
+
+
+func2 =
+
+   0.000000000000000
+  -0.707106781186548
+  -1.000000000000000
+  -0.707106781186547
+   0.000000000000000
+   0.707106781186548
+   1.000000000000000
+   0.707106781186547
+
+
+true =
+
+  logical
+
+   1
+
+</pre><p>Plots func1 and func2 to check whether they are the same function. Uses function real() to neglect minimal imaginary parts arising from floating point errors.</p><pre class="codeinput">figure;
+plot(x,real(func1));
+title(<span class="string">"func1"</span>,<span class="string">'FontWeight'</span>,<span class="string">'Normal'</span>);
+xlabel(<span class="string">'x-axis'</span>);     ylabel(<span class="string">'y-axis'</span>);
+
+figure;
+plot(x,real(func2),<span class="string">'r'</span>);
+title(<span class="string">"func2"</span>,<span class="string">'FontWeight'</span>,<span class="string">'Normal'</span>);
+xlabel(<span class="string">'x-axis'</span>);     ylabel(<span class="string">'y-axis'</span>);
+ylim([-1 1])
+
+<span class="comment">% As you can see below, the plots are the same. That also suggests DFFT</span>
+<span class="comment">% works.</span>
+</pre><img vspace="5" hspace="5" src="driver_01.png" alt=""> <img vspace="5" hspace="5" src="driver_02.png" alt=""> <p>Finds the first and the second derivative of a periodic function, say sin(x) again, and plots the original function with its derivatives.</p><pre class="codeinput"><span class="comment">% rediscretizes function sin(x) for a nicer graph</span>
+N = 2^6;
+x = (0:N-1)*(L/N);
+func = sin(x);
+
+<span class="comment">% computes and plots the derivatives</span>
+df = real(derivative(func,L));
+ddf = real(derivative(df,L));
+
+plot(x,func,x,df,x,ddf);
+title(<span class="string">"sin(x) and its derivatives"</span>,<span class="string">'FontWeight'</span>,<span class="string">'Normal'</span>);
+xlabel(<span class="string">'x-axis'</span>);     ylabel(<span class="string">'y-axis'</span>);
+legend(<span class="string">'sin(x)'</span>,<span class="string">'cos(x)'</span>,<span class="string">'-sin(x)'</span>);
+
+<span class="comment">% It is clear from the plot that the first and the second derivative were</span>
+<span class="comment">% determined correctly by the function DERIVATIVE.</span>
+</pre><img vspace="5" hspace="5" src="driver_03.png" alt=""> <p>Finds convolution of two periodic functions, say sin(x) and cos(x)</p><pre class="codeinput"><span class="comment">% discretizes sin(x) and cos(x)</span>
+N = 2^4;
+x = (0:N-1)*(L/N);
+
+convol1 = convolute(sin(x),cos(x),L)'
+
+<span class="comment">% Below is a result of this convolution.</span>
+</pre><pre class="codeoutput">
+convol1 =
+
+ -0.000000000000001 - 0.000000000000000i
+  1.202235459768692 - 0.000000000000000i
+  2.221441469079183 + 0.000000000000000i
+  2.902453152139430 - 0.000000000000000i
+  3.141592653589793 - 0.000000000000001i
+  2.902453152139431 - 0.000000000000001i
+  2.221441469079183 - 0.000000000000000i
+  1.202235459768693 - 0.000000000000000i
+  0.000000000000001 - 0.000000000000000i
+ -1.202235459768692 + 0.000000000000000i
+ -2.221441469079183 + 0.000000000000000i
+ -2.902453152139430 - 0.000000000000000i
+ -3.141592653589793 + 0.000000000000001i
+ -2.902453152139431 + 0.000000000000001i
+ -2.221441469079183 + 0.000000000000000i
+ -1.202235459768693 + 0.000000000000000i
+
+</pre><h2 id="7">Exercise 2 - Phone Number</h2><p>This section presents function PhoneNumber that converts signals based on the Dual Tone Multi-Frequency system to numbers.</p><pre class="codeinput">load(<span class="string">'signal.mat'</span>); load(<span class="string">'phonenumbers.mat'</span>);
+
+Signal = PhoneNumber(signal,8192)
+Number1 = PhoneNumber(number1,4096)
+Number2 = PhoneNumber(number2,4096)
+Number3 = PhoneNumber(number3,4096)
+Number4 = PhoneNumber(number4,4096)
+Number5 = PhoneNumber(number5,4096)
+
+<span class="comment">% All the numbers seem resonable. That suggests the function PhoneNumber</span>
+<span class="comment">% works.</span>
+</pre><pre class="codeoutput">
+Signal =
+
+     1     5     0     8     6     4     7     7     0     0     1
+
+
+Number1 =
+
+     0     2     0     5     2     5     2     6     9     5
+
+
+Number2 =
+
+     8     0     0     8     2     9     1     0     4     0
+
+
+Number3 =
+
+     0     6     2     8     3     0     2     6     1     1
+
+
+Number4 =
+
+     0     0     3     1     7     0     3     4     8     6     4     8     6
+
+
+Number5 =
+
+     0     0     1     2     0     2     4     5     6     1     1     1     1
+
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Assignment IV
+
+%% Exercise 1 - Discrete Fast Fourier Transform
+% This section presents the function DFFT, which either determines Fourier
+% transform of a periodic function or determines a function 
+% from a corresponding Fourier transform.
+%
+% In addition, functions derivative and convolute use the function
+% DFFT for calculating a derivative of a function and convolution of two
+% periodic functions, respectively.
+
+format long;
+%%
+% Compares our function DFFT and fft.
+
+% discretizes function sin(x)
+N = 2^3;
+L = 2*pi;
+x = (0:N-1)*(L/N);
+func = sin(x);
+
+% checks whether our function DFFT gives the same result as fft
+FT1 = DFFT(func)'
+FT2 = (fft(func)./N)'
+true = isequal(round(FT1,5),round(FT2,5))
+
+% As you can see below our function DFFT and the built-in function fft give
+% the same results.
+%%
+% Compares our function DFFT with ifft.
+
+% checks whether our function DFFT gives the same result as ifft
+func1 = DFFT(FT1,1)'
+func2 = ifft(FT2.*N)
+true = isequal(round(func1,5),round(func2,5))
+
+% As you can see below our function DFFT and the built-in function ifft give
+% the same results.
+%%
+% Plots func1 and func2 to check whether they are the same function.
+% Uses function real() to neglect minimal imaginary parts arising
+% from floating point errors.
+
+figure;
+plot(x,real(func1));
+title("func1",'FontWeight','Normal');
+xlabel('x-axis');     ylabel('y-axis');
+
+figure;
+plot(x,real(func2),'r');
+title("func2",'FontWeight','Normal');
+xlabel('x-axis');     ylabel('y-axis');
+ylim([-1 1])
+
+% As you can see below, the plots are the same. That also suggests DFFT
+% works.
+%%
+% Finds the first and the second derivative of a periodic function, say
+% sin(x) again, and plots the original function with its derivatives.
+
+% rediscretizes function sin(x) for a nicer graph
+N = 2^6;
+x = (0:N-1)*(L/N);
+func = sin(x);
+
+% computes and plots the derivatives
+df = real(derivative(func,L));
+ddf = real(derivative(df,L));
+
+plot(x,func,x,df,x,ddf);
+title("sin(x) and its derivatives",'FontWeight','Normal');
+xlabel('x-axis');     ylabel('y-axis');
+legend('sin(x)','cos(x)','-sin(x)');
+
+% It is clear from the plot that the first and the second derivative were
+% determined correctly by the function DERIVATIVE.
+%%
+% Finds convolution of two periodic functions, say sin(x) and cos(x)
+
+% discretizes sin(x) and cos(x)
+N = 2^4;
+x = (0:N-1)*(L/N);
+
+convol1 = convolute(sin(x),cos(x),L)'
+
+% Below is a result of this convolution.
+%% Exercise 2 - Phone Number
+% This section presents function PhoneNumber that converts signals based on
+% the Dual Tone Multi-Frequency system to numbers.
+
+load('signal.mat'); load('phonenumbers.mat');
+
+Signal = PhoneNumber(signal,8192)
+Number1 = PhoneNumber(number1,4096)
+Number2 = PhoneNumber(number2,4096)
+Number3 = PhoneNumber(number3,4096)
+Number4 = PhoneNumber(number4,4096)
+Number5 = PhoneNumber(number5,4096)
+
+% All the numbers seem resonable. That suggests the function PhoneNumber
+% works.
+##### SOURCE END #####
+--></body></html>
