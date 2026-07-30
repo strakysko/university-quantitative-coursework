@@ -1,0 +1,1277 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     59940,       1269]
+NotebookOptionsPosition[     56032,       1209]
+NotebookOutlinePosition[     56593,       1229]
+CellTagsIndexPosition[     56550,       1226]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["\<\
+Exercise 5
+\
+\>", "Section",
+ CellChangeTimes->{{3.9055973737574015`*^9, 
+  3.9055973863859525`*^9}},ExpressionUUID->"02f556a0-a3d7-41ca-8a4d-\
+d2286b6c6e4c"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Function", " ", "that", " ", "defines", " ", "parameters", " ", "and", 
+    " ", "performs", " ", "preliminary", " ", "work"}], " ", "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"preliminaries", "[", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+      RowBox[{
+       RowBox[{"c", " ", "=", "2"}], ";", "  ", 
+       RowBox[{"(*", " ", 
+        RowBox[{"Number", " ", "of", " ", "cranes"}], " ", "*)"}], 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"numberOfDays", " ", "=", "90"}], ";", " ", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+        "The", " ", "number", " ", "of", " ", "days", " ", "to", " ", "be", 
+         " ", "simulated"}], " ", "*)"}], "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+        "Parameters", " ", "for", " ", "arrival", " ", "and", " ", "service", 
+         " ", "distributions"}], " ", "*)"}], "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t", 
+       RowBox[{"\[Lambda]", " ", "=", " ", "1.25"}], ";", " ", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+        "Mean", " ", "interarrival", " ", "time", " ", "in", " ", "days"}], 
+        " ", "*)"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t", 
+       RowBox[{"meanServiceTime", " ", "=", " ", "1"}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"varianceOfServiceTime", " ", "=", " ", "0.1"}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"leftTruncation", " ", "=", " ", "0.5"}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"rightTruncation", " ", "=", " ", "1.5"}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t", "\[IndentingNewLine]", "\t", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"(*", " ", "Definitions", " ", "*)"}], "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t", 
+       RowBox[{"KINDARRIVAL", " ", "=", "1"}], ";", "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t", 
+       RowBox[{"KINDDEPARTURE", " ", "=", "2"}], ";", "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t", 
+       RowBox[{"KINDFASTDEPARTURE", " ", "=", " ", "3"}], ";", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"(*", " ", 
+        RowBox[{"Statistical", " ", "Counters"}], " ", "*)"}], 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"totalNumberOfArrivals", " ", "=", " ", "0"}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"totalAmountOfCranesBusy", " ", "=", "0"}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"totalWaitingTimeOfBoats", " ", "=", "0"}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"longestWaitingTimeOfBoats", " ", "=", " ", "0"}], ";", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"(*", " ", 
+        RowBox[{"Other", " ", "parameters"}], " ", "*)"}], 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"eventList", " ", "=", " ", 
+        RowBox[{"{", "}"}]}], ";", " ", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+         RowBox[{
+         "Events", " ", "in", " ", "the", " ", "list", " ", "have", " ", 
+          "the", " ", "form", " ", 
+          RowBox[{"{", 
+           RowBox[{"timeOfOccurence", ",", " ", "kind"}], "}"}]}], ",", " ", 
+         RowBox[{"e", ".", "g", ".", " ", 
+          RowBox[{"{", 
+           RowBox[{"5.2857", ",", " ", "KINDDEPARTURE"}], "}"}]}]}], " ", 
+        "*)"}], "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"queue", " ", "=", " ", 
+        RowBox[{"{", "}"}]}], ";", " ", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+         RowBox[{
+         "Customers", " ", "in", " ", "the", " ", "queue", " ", "have", " ", 
+          "the", " ", "form", " ", 
+          RowBox[{"{", 
+           RowBox[{"time", " ", "of", " ", "arrival"}], "}"}]}], ",", " ", 
+         RowBox[{"e", ".", "g", ".", " ", 
+          RowBox[{"{", "3.4874", "}"}]}]}], " ", "*)"}], 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"simulationClock", " ", "=", " ", "0"}], ";", " ", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"currentNumberOfCranesBusy", " ", "=", " ", "0"}], ";"}]}], 
+     "\[IndentingNewLine]", "\t\t\t\t\t  ", "]"}]}], ";"}]}]], "Input",
+ CellChangeTimes->{{3.905494776016403*^9, 3.905494782044562*^9}, {
+   3.905494838238288*^9, 3.905494899158778*^9}, {3.905496392466962*^9, 
+   3.9054964327567124`*^9}, 3.905496752607854*^9, {3.9054968714845266`*^9, 
+   3.905496893460433*^9}, {3.9054972875676813`*^9, 3.9054973070209336`*^9}, {
+   3.905498266553195*^9, 3.9054982954995956`*^9}, {3.905498343576065*^9, 
+   3.9054983478521967`*^9}, {3.905498605227805*^9, 3.9054986743671227`*^9}, {
+   3.9054999968689127`*^9, 3.9055000002437406`*^9}, {3.9055000332802086`*^9, 
+   3.905500039828964*^9}, 3.9055000990603294`*^9, {3.9055111367472515`*^9, 
+   3.905511142322663*^9}, {3.9055111784859505`*^9, 3.905511181148883*^9}, {
+   3.9055129978617334`*^9, 3.905513102721521*^9}, 3.905569672544031*^9, {
+   3.9055706481088905`*^9, 3.9055706851960373`*^9}, {3.905570914619209*^9, 
+   3.90557092871148*^9}, {3.905570985261716*^9, 3.905571028386885*^9}, {
+   3.9055710691283016`*^9, 3.905571070038184*^9}, {3.9055712582948847`*^9, 
+   3.9055712587552776`*^9}, {3.9055712890979147`*^9, 
+   3.9055713275235977`*^9}, {3.9055731191578927`*^9, 3.905573120073351*^9}, {
+   3.905573188490576*^9, 3.905573195899074*^9}, {3.905588538625531*^9, 
+   3.9055885458718596`*^9}, {3.905589487809549*^9, 3.905589505522574*^9}, {
+   3.9055904176285777`*^9, 3.9055905336544943`*^9}},
+ CellLabel->"In[1]:=",ExpressionUUID->"f2578db5-8760-4695-9c22-7086f03e80f0"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{"Func", " ", "draws", " ", "from", " ", "the", " ", "Weibull", " ", 
+    RowBox[{
+     RowBox[{"distr", ".", " ", "w"}], "/", " ", "mean"}], " ", "\[Lambda]"}],
+    " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"drawWeibullNumber", "[", "\[Lambda]_", "]"}], ":=", 
+   RowBox[{
+    RowBox[{"-", "\[Lambda]"}], " ", 
+    RowBox[{"Log", "[", 
+     RowBox[{"RandomReal", "[", "]"}], "]"}]}]}]}]], "Input",
+ CellChangeTimes->{{3.905498147917889*^9, 3.9054981483041306`*^9}, {
+   3.905499356161126*^9, 3.9054993591491137`*^9}, {3.9055022560786448`*^9, 
+   3.905502257732777*^9}, 3.905571336035754*^9, 3.9055905451370945`*^9},
+ CellLabel->"In[2]:=",ExpressionUUID->"798cb20d-4a51-4d80-9761-8fb58d5cae41"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{"Func", " ", "draws", " ", "from", " ", "N", 
+     RowBox[{"(", 
+      RowBox[{"meanServiceTime", ",", " ", "varianceOfServiceTime"}], ")"}], 
+     " ", 
+     RowBox[{"in", " ", "[", 
+      RowBox[{"lowerTruncation", ",", " ", "upperTruncation"}], "]"}], " ", 
+     "using", " ", "Box"}], "-", "Muller"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"drawNormalNumber", "[", 
+    RowBox[{
+    "meanServiceTime_", ",", " ", "varianceOfServiceTime_", ",", 
+     "leftTruncation_", ",", " ", "rightTruncation_"}], "]"}], ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "sample", "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"While", "[", 
+       RowBox[{"True", ",", "\[IndentingNewLine]", 
+        RowBox[{"(*", " ", 
+         RowBox[{"Box", "-", 
+          RowBox[{"Muller", " ", "method"}]}], " ", "*)"}], 
+        "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"sample", " ", "=", " ", 
+          RowBox[{"meanServiceTime", " ", "+", 
+           RowBox[{
+            RowBox[{"Sqrt", "[", "varianceOfServiceTime", "]"}], " ", "*", 
+            " ", 
+            RowBox[{"Sqrt", "[", 
+             RowBox[{
+              RowBox[{"-", "2"}], " ", 
+              RowBox[{"Log", "[", 
+               RowBox[{"RandomReal", "[", "]"}], "]"}]}], "]"}], "*", 
+            RowBox[{"Sin", "[", 
+             RowBox[{"2", "*", "Pi", " ", "*", " ", 
+              RowBox[{"RandomReal", "[", "]"}]}], "]"}]}]}]}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"(*", " ", 
+          RowBox[{"Checks", " ", "truncation"}], " ", "*)"}], 
+         "\[IndentingNewLine]", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{
+           "leftTruncation", " ", "<", " ", "sample", " ", "<", " ", 
+            "rightTruncation"}], ",", "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{"Break", "[", "]"}], ";"}]}], "\[IndentingNewLine]", 
+          "]"}]}]}], "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]",
+       "\[IndentingNewLine]", "sample"}]}], "\[IndentingNewLine]", 
+    "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.905499365612122*^9, 3.9054993759398265`*^9}, {
+   3.905500277870629*^9, 3.9055004394154487`*^9}, {3.905500676374943*^9, 
+   3.9055008038173437`*^9}, {3.905500885861059*^9, 3.905500989455696*^9}, {
+   3.9055010198335695`*^9, 3.905501120384859*^9}, {3.905501968376812*^9, 
+   3.90550197905383*^9}, {3.9055020290794773`*^9, 3.905502128411477*^9}, {
+   3.9055023627175875`*^9, 3.9055023633252687`*^9}, {3.905502531248765*^9, 
+   3.9055026346964474`*^9}, {3.9055026818829966`*^9, 3.905502701338516*^9}, {
+   3.905502731886405*^9, 3.905502743969612*^9}, {3.905502801491929*^9, 
+   3.9055030018780975`*^9}, {3.9055030507993097`*^9, 
+   3.9055031596204276`*^9}, {3.905503198337595*^9, 3.9055032231522226`*^9}, {
+   3.9055129404181476`*^9, 3.90551296374918*^9}, {3.9055131060789175`*^9, 
+   3.9055131122156277`*^9}, {3.905573137163813*^9, 3.9055731479316874`*^9}, {
+   3.905582985746538*^9, 3.905582993982901*^9}, {3.905590365705512*^9, 
+   3.9055903661650095`*^9}, 3.905590568043355*^9, {3.9055924985604877`*^9, 
+   3.905592498790388*^9}},
+ CellLabel->"In[3]:=",ExpressionUUID->"1ebaa51f-bc7c-4134-9f7b-04df161632e9"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Function", " ", "that", " ", "adds", " ", "an", " ", "event", " ", "to", 
+    " ", "the", " ", "event", " ", "list"}], " ", "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"addEventToEventList", "[", "event_", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t", 
+      RowBox[{
+       RowBox[{"eventList", "  ", "=", " ", 
+        RowBox[{"Sort", "[", 
+         RowBox[{"Append", "[", 
+          RowBox[{"eventList", ",", " ", "event"}], "]"}], "]"}]}], ";"}]}], 
+     "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t", "]"}]}], ";"}]}]], "Input",
+ CellChangeTimes->{{3.905495155196413*^9, 3.905495161628028*^9}, {
+   3.905496340113985*^9, 3.9054963792838216`*^9}, {3.9054967541089506`*^9, 
+   3.905496756831993*^9}, {3.9054968118132615`*^9, 3.905496812433652*^9}, {
+   3.9054975702820606`*^9, 3.9054975788041315`*^9}, {3.9054981404818335`*^9, 
+   3.9054981464558907`*^9}, {3.9055156111379795`*^9, 3.905515620133649*^9}, {
+   3.905569743732956*^9, 3.9055697625840764`*^9}, {3.9055700482701187`*^9, 
+   3.9055700514448986`*^9}, 3.9055702404704647`*^9, {3.905570621723282*^9, 
+   3.905570645144783*^9}},
+ CellLabel->"In[4]:=",ExpressionUUID->"bbb4efa3-5a99-4316-ab88-14a4708dbf4e"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Function", " ", "that", " ", "removes", " ", "the", " ", "next", " ", 
+    "event", " ", "from", " ", "the", " ", "event", " ", "list", " ", "and", 
+    " ", "returns", " ", "it"}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"removeAndReturnNextEventFromList", "[", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "nextEvent", "}"}], ",", "\[IndentingNewLine]", 
+      "\t\t\t\t\t\t\t\t\t\t\t", 
+      RowBox[{
+       RowBox[{"nextEvent", " ", "=", " ", 
+        RowBox[{"First", "[", "eventList", "]"}]}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t", 
+       RowBox[{"eventList", " ", "=", " ", 
+        RowBox[{"Drop", "[", 
+         RowBox[{"eventList", ",", " ", "1"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t", "nextEvent"}]}], 
+     "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t", "]"}]}], ";"}]}]], "Input",
+ CellChangeTimes->{{3.9054975765241585`*^9, 3.9054975770430255`*^9}, 
+   3.905498138136711*^9},
+ CellLabel->"In[5]:=",ExpressionUUID->"eb1cf0a6-ce56-46c7-b6ef-0e398d5cd867"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Function", " ", "that", " ", "removes", " ", "the", " ", "next", " ", 
+    "boat", " ", "from", " ", "the", " ", "queue", " ", "and", " ", "returns",
+     " ", "it"}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"removeAndReturnNextBoatFromQueue", "[", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "nextBoat", "}"}], ",", "\[IndentingNewLine]", 
+      "\t\t\t\t\t\t\t\t\t\t\t", 
+      RowBox[{
+       RowBox[{"nextBoat", " ", "=", " ", 
+        RowBox[{"First", "[", "queue", "]"}]}], ";", "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t\t\t\t\t\t", 
+       RowBox[{"queue", " ", "=", " ", 
+        RowBox[{"Drop", "[", 
+         RowBox[{"queue", ",", " ", "1"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t", "nextBoat"}]}], 
+     "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t", "]"}]}], ";"}], 
+  "\t"}]], "Input",
+ CellChangeTimes->{{3.9055737356828175`*^9, 3.905573773296308*^9}},
+ CellLabel->"In[6]:=",ExpressionUUID->"88c4080f-30d9-4d37-b79e-d4e5c079899d"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{"Function", " ", "that", " ", "starts", " ", "the", " ", 
+    RowBox[{"simulation", ":", " ", 
+     RowBox[{
+     "schedules", " ", "the", " ", "first", " ", "arrival", " ", "to", " ", 
+      "start", " ", "up", " ", "the", " ", "event", " ", "list"}]}]}], " ", 
+   "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"initialise", "[", "]"}], " ", ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", "\t\t\t\t\t", 
+      RowBox[{
+       RowBox[{"firstArrivalTime", " ", "=", " ", 
+        RowBox[{"drawWeibullNumber", "[", "\[Lambda]", "]"}]}], ";", "\t", 
+       "\[IndentingNewLine]", "\t\t\t\t\t", 
+       RowBox[{"addEventToEventList", "[", 
+        RowBox[{"{", 
+         RowBox[{"firstArrivalTime", ",", " ", "KINDARRIVAL"}], "}"}], "]"}], 
+       ";"}]}], " ", "\[IndentingNewLine]", "\t\t\t\t", "]"}]}], 
+   ";"}]}]], "Input",
+ CellChangeTimes->{{3.9054949515297346`*^9, 3.9054949526040525`*^9}, 
+   3.905495158178407*^9, 3.9054967473014956`*^9, {3.9055702542585173`*^9, 
+   3.905570267549146*^9}, {3.9055703639300623`*^9, 3.905570376104472*^9}, {
+   3.9055704104893312`*^9, 3.9055704108679867`*^9}, {3.9055704898837795`*^9, 
+   3.9055704901630926`*^9}, {3.905571407802058*^9, 3.9055714597751055`*^9}},
+ CellLabel->"In[7]:=",ExpressionUUID->"2b187b6d-b069-4092-bf39-f01081e4b4c4"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Function", " ", "that", " ", "processes", " ", "an", " ", "arrival", " ", 
+    "event"}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"handleArrivalEvent", "[", "arrivalTime_", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"nextArrivalTime", ",", " ", "serviceTime"}], "}"}], ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", " ", 
+       RowBox[{"Handle", " ", "the", " ", "arrival"}], " ", "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"totalNumberOfArrivals", " ", "+=", " ", "1"}], ";", "\t\t", 
+       "\[IndentingNewLine]", "\t\t", "\[IndentingNewLine]", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"currentNumberOfCranesBusy", " ", "<", " ", "c"}], ",", " ", 
+         RowBox[{"(*", " ", 
+          RowBox[{
+          "one", " ", "or", " ", "two", " ", "cranes", " ", "available"}], 
+          " ", "*)"}], "\[IndentingNewLine]", 
+         RowBox[{"(*", " ", 
+          RowBox[{
+          "The", " ", "arriving", " ", "boat", " ", "can", " ", "be", " ", 
+           "taken", " ", "into", " ", "service", " ", "immediately"}], " ", 
+          "*)"}], "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"serviceTime", " ", "=", " ", 
+           RowBox[{"drawNormalNumber", "[", 
+            RowBox[{
+            "meanServiceTime", ",", " ", "varianceOfServiceTime", ",", 
+             "leftTruncation", ",", " ", "rightTruncation"}], "]"}]}], ";", 
+          "\[IndentingNewLine]", "\[IndentingNewLine]", 
+          RowBox[{"If", "[", 
+           RowBox[{
+            RowBox[{"currentNumberOfCranesBusy", " ", "==", " ", "0"}], ",", 
+            "\[IndentingNewLine]", 
+            RowBox[{"(*", " ", 
+             RowBox[{"Two", " ", "cranes", " ", "available"}], " ", "*)"}], 
+            "\[IndentingNewLine]", 
+            RowBox[{
+             RowBox[{"totalWaitingTimeOfBoats", " ", "+=", " ", 
+              RowBox[{"serviceTime", "/", "2"}]}], ";", "\[IndentingNewLine]", 
+             RowBox[{"longestWaitingTimeOfBoats", " ", "=", " ", 
+              RowBox[{"Max", "[", 
+               RowBox[{"longestWaitingTimeOfBoats", ",", " ", 
+                RowBox[{"serviceTime", "/", "2"}]}], "]"}]}], ";", 
+             "\[IndentingNewLine]", "\[IndentingNewLine]", 
+             RowBox[{"addEventToEventList", "[", 
+              RowBox[{"{", 
+               RowBox[{
+                RowBox[{"simulationClock", " ", "+", " ", 
+                 RowBox[{"serviceTime", "/", "2"}]}], ",", " ", 
+                "KINDFASTDEPARTURE"}], "}"}], "]"}], ";", 
+             "\[IndentingNewLine]", 
+             RowBox[{"currentNumberOfCranesBusy", " ", "+=", "2"}], ";"}], 
+            "\[IndentingNewLine]", ",", "\[IndentingNewLine]", 
+            "\[IndentingNewLine]", 
+            RowBox[{"(*", " ", 
+             RowBox[{"One", " ", "crane", " ", "available"}], " ", "*)"}], 
+            "\[IndentingNewLine]", 
+            RowBox[{
+             RowBox[{
+             "totalWaitingTimeOfBoats", " ", "+=", " ", "serviceTime"}], ";", 
+             "\[IndentingNewLine]", 
+             RowBox[{"longestWaitingTimeOfBoats", " ", "=", " ", 
+              RowBox[{"Max", "[", 
+               RowBox[{"longestWaitingTimeOfBoats", ",", " ", "serviceTime"}],
+                "]"}]}], ";", "\[IndentingNewLine]", 
+             RowBox[{"addEventToEventList", "[", 
+              RowBox[{"{", 
+               RowBox[{
+                RowBox[{"simulationClock", " ", "+", " ", "serviceTime"}], 
+                ",", " ", "KINDDEPARTURE"}], "}"}], "]"}], ";", 
+             "\[IndentingNewLine]", 
+             RowBox[{"currentNumberOfCranesBusy", " ", "+=", "1"}], ";"}]}], 
+           "\[IndentingNewLine]", "]"}]}], ",", "\[IndentingNewLine]", 
+         "\[IndentingNewLine]", 
+         RowBox[{"(*", " ", 
+          RowBox[{
+          "The", " ", "arriving", " ", "boat", " ", "must", " ", "queue"}], 
+          " ", "*)"}], "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"queue", " ", "=", " ", 
+           RowBox[{"Append", "[", 
+            RowBox[{"queue", ",", " ", "arrivalTime"}], "]"}]}], ";"}]}], 
+        "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+         RowBox[{
+         "Now", " ", "that", " ", "the", " ", "arrival", " ", "is", " ", 
+          "handled"}], ",", " ", 
+         RowBox[{"schedule", " ", "the", " ", "next", " ", "arrival"}]}], " ",
+         "*)"}], "\[IndentingNewLine]", 
+       RowBox[{"nextArrivalTime", " ", "=", " ", 
+        RowBox[{"simulationClock", " ", "+", " ", 
+         RowBox[{"drawWeibullNumber", "[", "\[Lambda]", "]"}]}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"addEventToEventList", "[", 
+        RowBox[{"{", 
+         RowBox[{"nextArrivalTime", ",", " ", "KINDARRIVAL"}], "}"}], "]"}], 
+       ";"}]}], "\[IndentingNewLine]", "]"}]}], ";"}]}]], "Input",
+ CellChangeTimes->{{3.9054985408373785`*^9, 3.9054985412154803`*^9}, {
+   3.905500088591912*^9, 3.9055001093343534`*^9}, {3.905500140816558*^9, 
+   3.9055002446298304`*^9}, {3.9055093063567*^9, 3.9055093123150024`*^9}, {
+   3.9055094692136297`*^9, 3.905509476250557*^9}, {3.905509509837661*^9, 
+   3.9055095455643325`*^9}, {3.905509578481903*^9, 3.9055097045631065`*^9}, {
+   3.9055097352240686`*^9, 3.905509736140047*^9}, {3.9055098224054413`*^9, 
+   3.9055098872010508`*^9}, {3.905509966157519*^9, 3.905510074699259*^9}, {
+   3.905510181949567*^9, 3.905510183199935*^9}, {3.905510968327202*^9, 
+   3.905511096585314*^9}, {3.9055111293882713`*^9, 3.9055111312480803`*^9}, {
+   3.9055111704416695`*^9, 3.905511308302389*^9}, {3.9055113513300343`*^9, 
+   3.9055114472987533`*^9}, {3.905511477711221*^9, 3.9055114786465006`*^9}, {
+   3.905512973674754*^9, 3.9055129739847355`*^9}, 3.905571369435149*^9, {
+   3.9055731082877283`*^9, 3.9055731134327965`*^9}, {3.9055732109193335`*^9, 
+   3.9055732127585373`*^9}, {3.905589772183711*^9, 3.905589774158823*^9}, {
+   3.9055898100616875`*^9, 3.905589884001749*^9}, {3.905589929056728*^9, 
+   3.9055899371165175`*^9}, {3.9055926033383875`*^9, 3.9055926065013733`*^9}},
+ CellLabel->"In[8]:=",ExpressionUUID->"b4a35ca2-0efa-4a58-9170-a6113db435e0"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Function", " ", "that", " ", "processes", " ", "a", " ", "departure", " ",
+     "event"}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"handleDepartureEvent", "[", "departureTime_", "]"}], " ", ":=", 
+     " ", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", "nextServiceTime", "}"}], ",", "\[IndentingNewLine]", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+        "Check", " ", "whether", " ", "there", " ", "is", " ", "a", " ", 
+         "boat", " ", "queued", " ", 
+         RowBox[{"up", "."}]}], "  ", "*)"}], "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Length", "[", "queue", "]"}], " ", ">", " ", "0"}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{"(*", " ", 
+           RowBox[{"There", " ", "is", " ", "a", " ", "boat", " ", 
+            RowBox[{"queued", ":", " ", 
+             RowBox[{
+             "put", " ", "this", " ", "boat", " ", "into", " ", "service", 
+              " ", "and", " ", "schedule", " ", "departure"}]}]}], " ", 
+           "*)"}], "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"nextServiceTime", " ", "=", " ", 
+            RowBox[{"drawNormalNumber", "[", 
+             RowBox[{
+             "meanServiceTime", ",", " ", "varianceOfServiceTime", ",", " ", 
+              "leftTruncation", ",", " ", "rightTruncation"}], "]"}]}], ";", 
+           "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{"arrivalTimeOfBoatToBePutIntoService", " ", "=", " ", 
+            RowBox[{"removeAndReturnNextBoatFromQueue", "[", "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"waitingTimeOfBoat", " ", "=", " ", 
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{
+              "simulationClock", "-", "arrivalTimeOfBoatToBePutIntoService"}],
+               ")"}], " ", "+", " ", "nextServiceTime"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{
+           "totalWaitingTimeOfBoats", " ", "+=", " ", "waitingTimeOfBoat"}], 
+           ";", "\[IndentingNewLine]", 
+           RowBox[{"longestWaitingTimeOfBoats", " ", "=", " ", 
+            RowBox[{"Max", "[", 
+             RowBox[{
+             "longestWaitingTimeOfBoats", ",", " ", "waitingTimeOfBoat"}], 
+             "]"}]}], ";", "\[IndentingNewLine]", 
+           RowBox[{"addEventToEventList", "[", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"simulationClock", " ", "+", " ", "nextServiceTime"}], 
+              ",", "KINDDEPARTURE"}], "}"}], "]"}], ";"}], 
+          "\[IndentingNewLine]", ",", "\[IndentingNewLine]", 
+          "\[IndentingNewLine]", 
+          RowBox[{"(*", " ", 
+           RowBox[{"There", " ", "is", " ", "no", " ", "customer", " ", 
+            RowBox[{"queued", ":", " ", 
+             RowBox[{
+             "make", " ", "the", " ", "clerk", " ", "available", " ", 
+              "again"}]}]}], " ", "*)"}], "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"currentNumberOfCranesBusy", " ", "-=", "1"}], ";"}]}], 
+         "\[IndentingNewLine]", "]"}], ";"}]}], "\[IndentingNewLine]", 
+      "]"}]}], ";"}], "\[IndentingNewLine]"}]}]], "Input",
+ CellChangeTimes->{{3.905498523848093*^9, 3.9054985244265137`*^9}, {
+   3.905512874574744*^9, 3.905512930832*^9}, {3.905513126237109*^9, 
+   3.9055132192961826`*^9}, {3.9055135148536882`*^9, 
+   3.9055135236860332`*^9}, {3.9055137995448017`*^9, 
+   3.9055138767132225`*^9}, {3.9055143652776933`*^9, 3.905514371009904*^9}, {
+   3.9055144219962254`*^9, 3.90551451452197*^9}, {3.9055145460831685`*^9, 
+   3.90551454632235*^9}, {3.9055145813742647`*^9, 3.905514606272541*^9}, {
+   3.9055149664174337`*^9, 3.905514968304757*^9}, {3.9055150273053155`*^9, 
+   3.9055150313845987`*^9}, 3.9055713723591523`*^9, {3.905578839776453*^9, 
+   3.9055788501855345`*^9}, {3.9055792348891*^9, 3.9055792394208107`*^9}, 
+   3.9055804842146235`*^9, {3.905581146919363*^9, 3.905581175259691*^9}, {
+   3.9055815032615814`*^9, 3.9055815060752153`*^9}, {3.9055815568569345`*^9, 
+   3.9055815668253107`*^9}, {3.905581722683736*^9, 3.9055817269986725`*^9}, {
+   3.9055820144197054`*^9, 3.905582021318514*^9}, {3.9055821185015416`*^9, 
+   3.9055821198256474`*^9}, 3.9055822269570293`*^9, 3.9055823568426456`*^9, {
+   3.905588594223637*^9, 3.905588654727498*^9}, {3.9055895444927177`*^9, 
+   3.905589595170184*^9}, 3.9055896736854997`*^9},
+ CellLabel->"In[9]:=",ExpressionUUID->"40cb10c5-bd2e-43e4-b6e5-0e37d247701e"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Function", " ", "that", " ", "processes", " ", "a", " ", "fast", " ", 
+    "departure", " ", "event"}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"handleFastDepartureEvent", "[", "departureTime_", "]"}], " ", ":=",
+      " ", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", "nextServiceTime", "}"}], ",", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+        "Checks", " ", "whether", " ", "there", " ", "is", " ", "a", " ", 
+         "boat", " ", "queued", " ", "up"}], " ", "*)"}], 
+       "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Length", "[", "queue", "]"}], " ", ">", " ", "0"}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{"(*", " ", 
+           RowBox[{
+            RowBox[{
+            "If", " ", "there", " ", "is", " ", "at", " ", "least", " ", 
+             "one", " ", "boat", " ", "in", " ", "the", " ", "queue"}], ",", 
+            " ", 
+            RowBox[{
+            "the", " ", "boat", " ", "is", " ", "scheduled", " ", "with", " ",
+              "normal", " ", "service", " ", "time", " ", "even", " ", 
+             "though", " ", "two", " ", "berths", " ", "are", " ", "free", 
+             " ", "after", " ", "the", " ", "fast", " ", "departure", " ", 
+             "of", " ", "one", " ", "boat", " ", "unloaded", " ", "with", " ",
+              "two", " ", "cranes"}]}], " ", "*)"}], "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"nextServiceTime", " ", "=", " ", 
+            RowBox[{"drawNormalNumber", "[", 
+             RowBox[{
+             "meanServiceTime", ",", " ", "varianceOfServiceTime", ",", " ", 
+              "leftTruncation", ",", " ", "rightTruncation"}], "]"}]}], ";", 
+           "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{"arrivalTimeOfBoatToBePutIntoService", " ", "=", " ", 
+            RowBox[{"removeAndReturnNextBoatFromQueue", "[", "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"waitingTimeOfBoat", " ", "=", " ", 
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{
+              "simulationClock", "-", "arrivalTimeOfBoatToBePutIntoService"}],
+               ")"}], " ", "+", " ", "nextServiceTime"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{
+           "totalWaitingTimeOfBoats", " ", "+=", " ", "waitingTimeOfBoat"}], 
+           ";", "\[IndentingNewLine]", 
+           RowBox[{"longestWaitingTimeOfBoats", " ", "=", " ", 
+            RowBox[{"Max", "[", 
+             RowBox[{
+             "longestWaitingTimeOfBoats", ",", " ", "waitingTimeOfBoat"}], 
+             "]"}]}], ";", "\[IndentingNewLine]", 
+           RowBox[{"addEventToEventList", "[", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"simulationClock", " ", "+", " ", "nextServiceTime"}], 
+              ",", "KINDDEPARTURE"}], "}"}], "]"}], ";", 
+           "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{"(*", " ", 
+            RowBox[{
+            "Check", " ", "whether", " ", "there", " ", "is", " ", "another", 
+             " ", "boat", " ", "queued", " ", "up"}], " ", "*)"}], 
+           "\[IndentingNewLine]", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"Length", "[", "queue", "]"}], " ", ">", "0"}], ",", 
+             "\[IndentingNewLine]", 
+             RowBox[{"(*", " ", 
+              RowBox[{"There", " ", "is", " ", "another", " ", "boat", " ", 
+               RowBox[{"queued", ":", " ", 
+                RowBox[{
+                "put", " ", "it", " ", "into", " ", "service", " ", "and", 
+                 " ", "schedule", " ", "departure"}]}]}], " ", "*)"}], 
+             "\[IndentingNewLine]", 
+             RowBox[{
+              RowBox[{"nextServiceTime", " ", "=", " ", 
+               RowBox[{"drawNormalNumber", "[", 
+                RowBox[{
+                "meanServiceTime", ",", " ", "varianceOfServiceTime", ",", 
+                 " ", "leftTruncation", ",", " ", "rightTruncation"}], 
+                "]"}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+              RowBox[{"arrivalTimeOfBoatToBePutIntoService", " ", "=", " ", 
+               RowBox[{"removeAndReturnNextBoatFromQueue", "[", "]"}]}], ";", 
+              "\[IndentingNewLine]", 
+              RowBox[{"waitingTimeOfBoat", " ", "=", " ", 
+               RowBox[{
+                RowBox[{"(", 
+                 RowBox[{
+                 "simulationClock", "-", 
+                  "arrivalTimeOfBoatToBePutIntoService"}], ")"}], " ", "+", 
+                " ", "nextServiceTime"}]}], ";", "\[IndentingNewLine]", 
+              RowBox[{
+              "totalWaitingTimeOfBoats", " ", "+=", " ", 
+               "waitingTimeOfBoat"}], ";", "\[IndentingNewLine]", 
+              RowBox[{"longestWaitingTimeOfBoats", " ", "=", " ", 
+               RowBox[{"Max", "[", 
+                RowBox[{
+                "longestWaitingTimeOfBoats", ",", " ", "waitingTimeOfBoat"}], 
+                "]"}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+              RowBox[{"addEventToEventList", "[", 
+               RowBox[{"{", 
+                RowBox[{
+                 RowBox[{
+                 "simulationClock", " ", "+", " ", "nextServiceTime"}], ",", 
+                 "KINDDEPARTURE"}], "}"}], "]"}], ";"}], 
+             "\[IndentingNewLine]", "\[IndentingNewLine]", ",", 
+             "\[IndentingNewLine]", 
+             RowBox[{
+              RowBox[{"currentNumberOfCranesBusy", " ", "-=", "1"}], ";"}]}], 
+            "\[IndentingNewLine]", "]"}], ";"}], "\[IndentingNewLine]", ",", 
+          "\[IndentingNewLine]", "\[IndentingNewLine]", 
+          RowBox[{"(*", " ", 
+           RowBox[{"There", " ", "is", " ", "no", " ", "boat", " ", 
+            RowBox[{"queued", ":", " ", 
+             RowBox[{
+             "make", " ", "both", " ", "cranes", " ", "available", " ", 
+              "again"}]}]}], " ", "*)"}], "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"currentNumberOfCranesBusy", " ", "-=", "2"}], ";"}]}], 
+         "\[IndentingNewLine]", "]"}], ";"}]}], "\[IndentingNewLine]", 
+      "]"}]}], ";"}], "\[IndentingNewLine]"}]}]], "Input",
+ CellChangeTimes->{{3.9055150349063463`*^9, 3.905515044499361*^9}, {
+   3.905515107726717*^9, 3.905515157462999*^9}, {3.905515218889544*^9, 
+   3.905515259965514*^9}, {3.905515330207405*^9, 3.9055153539831724`*^9}, 
+   3.9055713749080496`*^9, {3.905572652095018*^9, 3.9055726540405855`*^9}, {
+   3.905573658418515*^9, 3.905573668764674*^9}, {3.9055739001716595`*^9, 
+   3.905573965403962*^9}, {3.9055796373805256`*^9, 3.905579644439711*^9}, {
+   3.905579783097088*^9, 3.905579794561372*^9}, {3.9055800274301195`*^9, 
+   3.9055800504503794`*^9}, {3.905580100491596*^9, 3.9055801073233433`*^9}, {
+   3.90558013847344*^9, 3.905580153469578*^9}, {3.905580189002817*^9, 
+   3.905580208797903*^9}, {3.905580319551572*^9, 3.905580325647455*^9}, {
+   3.9055812048349648`*^9, 3.9055812433904886`*^9}, {3.905581515647543*^9, 
+   3.9055815235503654`*^9}, {3.9055815747860503`*^9, 
+   3.9055815926398463`*^9}, {3.905581736578235*^9, 3.90558175970798*^9}, {
+   3.9055820280556693`*^9, 3.9055820320874057`*^9}, {3.905582091791966*^9, 
+   3.905582109446653*^9}, {3.905582270332781*^9, 3.9055822754386845`*^9}, 
+   3.9055823497282753`*^9, {3.9055875398070445`*^9, 3.9055875399323883`*^9}, {
+   3.9055875769795237`*^9, 3.9055875777938056`*^9}, {3.9055877383130846`*^9, 
+   3.905587866152817*^9}, {3.905587898957964*^9, 3.9055879279072275`*^9}, {
+   3.9055879842473607`*^9, 3.9055880224222784`*^9}, {3.905588663189908*^9, 
+   3.905588700116479*^9}, 3.9055896188861237`*^9, {3.9055896567852483`*^9, 
+   3.9055896572719927`*^9}, {3.9055896993410845`*^9, 
+   3.9055897368683786`*^9}, {3.905592830983282*^9, 3.9055929050071735`*^9}},
+ CellLabel->"In[10]:=",ExpressionUUID->"f3326170-8266-4e87-ad5d-b57cb0ff0e29"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Function", " ", "that", " ", "takes", " ", "the", " ", "next", " ", 
+    "event", " ", "from", " ", "the", " ", "event", " ", "list", " ", "and", 
+    " ", "processes", " ", 
+    RowBox[{"it", "."}]}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"handleNextEvent", "[", "]"}], " ", ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"nextEvent", ",", " ", "eventTime", ",", " ", "eventKind"}], 
+       "}"}], ",", "\[IndentingNewLine]", "\t\t\t\t\t\t\t", 
+      RowBox[{
+       RowBox[{"nextEvent", " ", "=", " ", 
+        RowBox[{"removeAndReturnNextEventFromList", "[", "]"}]}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t\t", 
+       RowBox[{"eventTime", " ", "=", " ", 
+        RowBox[{"nextEvent", "[", 
+         RowBox[{"[", "1", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t\t", 
+       RowBox[{"eventKind", " ", "=", " ", 
+        RowBox[{"nextEvent", "[", 
+         RowBox[{"[", "2", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t\t", 
+       RowBox[{"(*", " ", 
+        RowBox[{"Update", " ", "counters", " ", "and", " ", "parameters"}], 
+        " ", "*)"}], "\[IndentingNewLine]", "\t\t\t\t\t\t\t", 
+       RowBox[{"simulationClock", " ", "=", " ", "eventTime"}], ";", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", "\t\t\t\t\t\t\t", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+        "Checks", " ", "whether", " ", "the", " ", "next", " ", "event", " ", 
+         "is", " ", "an", " ", "arrival", " ", "or", " ", "a", " ", 
+         "departure", " ", "and", " ", "calls", " ", "functions", " ", 
+         "accordingly"}], " ", "*)"}], "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t\t", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"eventKind", "==", "KINDARRIVAL"}], " ", ",", " ", 
+         "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t", 
+         RowBox[{
+          RowBox[{"handleArrivalEvent", "[", "eventTime", "]"}], ";"}], " ", 
+         "\[IndentingNewLine]", "\t\t\t\t\t\t\t", ",", "\[IndentingNewLine]", 
+         "\t\t\t\t\t\t\t\t", 
+         RowBox[{
+          RowBox[{"If", "[", 
+           RowBox[{
+            RowBox[{"eventKind", " ", "\[Equal]", " ", "KINDDEPARTURE"}], ",",
+             "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t", 
+            RowBox[{
+             RowBox[{"handleDepartureEvent", "[", "eventTime", "]"}], ";"}], 
+            ",", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+            "\t\t\t\t\t\t\t\t", 
+            RowBox[{
+             RowBox[{"handleFastDepartureEvent", "[", "eventTime", "]"}], 
+             ";"}]}], "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t", "]"}], 
+          ";"}]}], "\[IndentingNewLine]", "\t\t\t\t\t\t\t", "]"}], ";"}]}], 
+     "\[IndentingNewLine]", "\t\t\t\t\t\t", "]"}]}], ";"}], "\t\t"}]], "Input",
+ CellChangeTimes->{{3.9054974709217668`*^9, 3.905497471485419*^9}, {
+   3.90549841133144*^9, 3.9054984169495673`*^9}, {3.9055116097997966`*^9, 
+   3.9055116760080466`*^9}, 3.9055713790212355`*^9, {3.9055727867969418`*^9, 
+   3.9055727875114727`*^9}, {3.9055728357015905`*^9, 
+   3.9055728756715584`*^9}, {3.9055789539211044`*^9, 3.905578991417822*^9}, {
+   3.905579037862256*^9, 3.905579050846388*^9}, {3.9055794404852843`*^9, 
+   3.905579462042929*^9}, {3.905591521950932*^9, 3.90559152587951*^9}},
+ CellLabel->"In[11]:=",ExpressionUUID->"90d03448-c50d-4231-a33c-08f063267249"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Function", " ", "that", " ", "reports", " ", "the", " ", "input", " ", 
+    "parameters", " ", "and", " ", "the", " ", "findings", " ", "of", " ", 
+    "the", " ", "simulation", " ", "program"}], " ", "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"report", "[", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+      RowBox[{
+       RowBox[{
+       "Print", "[", "\"\<=======================================\>\"", "]"}],
+        ";", "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{
+       "Print", "[", "\"\<=== Simulation run of a harbor example ===\>\"", 
+        "]"}], ";", "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{
+       "Print", "[", "\"\<=======================================\>\"", "]"}],
+        ";", "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"Print", "[", "\"\<Input parameters:\>\"", "]"}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"Print", "[", 
+        RowBox[{
+        "\"\<Number of cranes c equals \>\"", ",", " ", "c", ",", " ", 
+         "\"\<.\>\""}], "]"}], ";", "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"Print", "[", 
+        RowBox[{
+        "\"\<Mean interarrival time \[Lambda] equals \>\"", ",", " ", 
+         "\[Lambda]", ",", " ", "\"\< per day.\>\""}], "]"}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"Print", "[", 
+        RowBox[{
+        "\"\<Lower bound of service time ~ N(1,0.1) is \>\"", ",", " ", 
+         "leftTruncation", ",", " ", "\"\< day(s).\>\""}], "]"}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"Print", "[", 
+        RowBox[{
+        "\"\<Upper bound of service time N(1,0.1}) is \>\"", ",", " ", 
+         "rightTruncation", ",", " ", "\"\< day(s).\>\""}], "]"}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{
+       "Print", "[", "\"\<=======================================\>\"", "]"}],
+        ";", "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"Print", "[", "\"\<Results:\>\"", "]"}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"Print", "[", 
+        RowBox[{
+        "\"\<Duration of the simulation is \>\"", ",", " ", "simulationClock",
+          ",", " ", "\"\< days\>\""}], "]"}], ";", "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t", 
+       RowBox[{"Print", "[", 
+        RowBox[{
+        "\"\<The total number of boats that arrived equals \>\"", ",", " ", 
+         "totalNumberOfArrivals", " ", ",", "\"\<.\>\""}], "]"}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"Print", "[", 
+        RowBox[{"\"\<The average waiting time of boats equals \>\"", ",", " ", 
+         RowBox[{
+         "totalWaitingTimeOfBoats", " ", "/", " ", "totalNumberOfArrivals"}], 
+         ",", " ", "\"\< day(s).\>\""}], "]"}], ";", "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t", 
+       RowBox[{"Print", "[", 
+        RowBox[{
+        "\"\<The longest waiting time of boats equals \>\"", ",", " ", 
+         "longestWaitingTimeOfBoats", ",", " ", "\"\< day(s).\>\""}], "]"}], 
+       ";"}]}], "\[IndentingNewLine]", "\t\t\t", "]"}]}], ";"}]}]], "Input",
+ CellChangeTimes->{{3.9055931123982134`*^9, 3.905593118552747*^9}},
+ CellLabel->"In[12]:=",ExpressionUUID->"e22feb45-6079-46d3-80ac-d1c8e16cddc7"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{"Main", " ", "Function"}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"runProgram", "[", "]"}], "  ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "averageWaitingTime", "}"}], ",", "\[IndentingNewLine]", 
+      "\t\t\t\t\t\t\t", 
+      RowBox[{
+       RowBox[{"preliminaries", "[", "]"}], ";", "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t\t", 
+       RowBox[{"initialise", "[", "]"}], ";", "\[IndentingNewLine]", 
+       "\t\t\t\t", "\[IndentingNewLine]", "\t\t\t\t\t\t\t", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+         RowBox[{
+         "Handle", " ", "events", " ", "when", " ", "the", " ", "time", " ", 
+          "of", " ", "the", " ", "earliest", " ", "upcoming", " ", "event"}], 
+         ",", " ", 
+         RowBox[{
+          RowBox[{"eventList", "[", 
+           RowBox[{"[", "1", "]"}], "]"}], "[", 
+          RowBox[{"[", "1", "]"}], "]"}], ",", " ", 
+         RowBox[{
+         "occurs", " ", "before", " ", "the", " ", "end", " ", "of", " ", 
+          "the", " ", "day"}], ",", " ", 
+         RowBox[{"marked", " ", "by", " ", "numberOfHoursInADay"}]}], " ", 
+        "*)"}], "\t\t\t\t", "\[IndentingNewLine]", "\t\t\t\t\t\t\t", 
+       RowBox[{"While", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{
+           RowBox[{"eventList", "[", 
+            RowBox[{"[", "1", "]"}], "]"}], "[", 
+           RowBox[{"[", "1", "]"}], "]"}], " ", "<", " ", "numberOfDays"}], 
+         ",", "\[IndentingNewLine]", "\t\t\t\t\t\t", "\[IndentingNewLine]", 
+         "\t\t\t\t\t\t\t\t\t", 
+         RowBox[{
+          RowBox[{"handleNextEvent", "[", "]"}], ";"}]}], 
+        "\[IndentingNewLine]", "\[IndentingNewLine]", "\t\t\t\t\t\t\t", "]"}],
+        ";", "\[IndentingNewLine]", "\t\t\t\t\t\t\t", 
+       RowBox[{"report", "[", "]"}], ";", "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t\t", 
+       RowBox[{"averageWaitingTime", " ", "=", " ", 
+        RowBox[{
+        "totalWaitingTimeOfBoats", " ", "/", " ", "totalNumberOfArrivals"}]}],
+        ";", "\[IndentingNewLine]", "\t\t\t\t\t\t\t", 
+       RowBox[{"{", 
+        RowBox[{"averageWaitingTime", ",", " ", "longestWaitingTimeOfBoats"}],
+         "}"}]}]}], "\[IndentingNewLine]", "\t\t\t", "]"}]}], 
+   ";"}]}]], "Input",
+ CellChangeTimes->{{3.9054948005536203`*^9, 3.905494805857674*^9}, {
+   3.9054949396064053`*^9, 3.90549494982924*^9}, {3.9054973156479263`*^9, 
+   3.905497320463682*^9}, {3.9054973721754737`*^9, 3.9054973806376777`*^9}, 
+   3.905497465190304*^9, 3.9055154089553795`*^9, {3.9055703122996364`*^9, 
+   3.905570316910921*^9}, {3.9055703496437454`*^9, 3.9055703522385297`*^9}, 
+   3.90557138123207*^9, {3.9055740764321985`*^9, 3.905574077063749*^9}, {
+   3.9055795081795745`*^9, 3.9055795158223925`*^9}, 3.905581597253725*^9, {
+   3.9055817661849484`*^9, 3.9055817664881864`*^9}, {3.9055823929447412`*^9, 
+   3.9055823992315845`*^9}, {3.9055824336159525`*^9, 3.905582446160347*^9}, {
+   3.9055824803485208`*^9, 3.905582494842826*^9}, 3.905588948737286*^9, {
+   3.90558931128219*^9, 3.905589319494351*^9}, {3.9055930357080927`*^9, 
+   3.905593091570983*^9}, {3.9055931509710474`*^9, 3.9055931573482485`*^9}, {
+   3.9055931959107065`*^9, 3.905593199365098*^9}, {3.905594177319936*^9, 
+   3.9055941805946045`*^9}},
+ CellLabel->"In[13]:=",ExpressionUUID->"664d2979-1699-42bd-a7a4-067d64b19a9f"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{"Actually", " ", "run", " ", "the", " ", 
+    RowBox[{"program", ":"}]}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"runProgram", "[", "]"}], ";"}]}]], "Input",
+ CellChangeTimes->{{3.9054947974988832`*^9, 3.905494810959892*^9}, {
+   3.9055154329932537`*^9, 3.9055154338605185`*^9}, {3.905570088813676*^9, 
+   3.905570103485247*^9}, {3.9055813767715225`*^9, 3.90558138242043*^9}, {
+   3.9055893372442274`*^9, 3.905589339945225*^9}, 3.9055931715993547`*^9},
+ CellLabel->"In[14]:=",ExpressionUUID->"caa52580-ea49-4769-adba-f3a1d1e8ce4f"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"=======================================\"\>"], "Print",
+ CellChangeTimes->{{3.9055942145150166`*^9, 3.9055942457537684`*^9}, 
+   3.905594460195692*^9, 3.9055945209844046`*^9, {3.905610744104275*^9, 
+   3.905610762149555*^9}},
+ CellLabel->
+  "During evaluation of \
+In[14]:=",ExpressionUUID->"3cbed9c1-f3e0-4214-8a1b-ac9dd84d3837"],
+
+Cell[BoxData["\<\"=== Simulation run of a harbor example ===\"\>"], "Print",
+ CellChangeTimes->{{3.9055942145150166`*^9, 3.9055942457537684`*^9}, 
+   3.905594460195692*^9, 3.9055945209844046`*^9, {3.905610744104275*^9, 
+   3.905610762153535*^9}},
+ CellLabel->
+  "During evaluation of \
+In[14]:=",ExpressionUUID->"5e095abd-fde1-4a08-9e16-207239c60902"],
+
+Cell[BoxData["\<\"=======================================\"\>"], "Print",
+ CellChangeTimes->{{3.9055942145150166`*^9, 3.9055942457537684`*^9}, 
+   3.905594460195692*^9, 3.9055945209844046`*^9, {3.905610744104275*^9, 
+   3.9056107621589193`*^9}},
+ CellLabel->
+  "During evaluation of \
+In[14]:=",ExpressionUUID->"f427a3b3-7c7a-4062-b625-609bc14e4469"],
+
+Cell[BoxData["\<\"Input parameters:\"\>"], "Print",
+ CellChangeTimes->{{3.9055942145150166`*^9, 3.9055942457537684`*^9}, 
+   3.905594460195692*^9, 3.9055945209844046`*^9, {3.905610744104275*^9, 
+   3.90561076216191*^9}},
+ CellLabel->
+  "During evaluation of \
+In[14]:=",ExpressionUUID->"6a0d371a-b238-4b6d-ab0b-081580410606"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Number of cranes c equals \"\>", "\[InvisibleSpace]", "2", 
+   "\[InvisibleSpace]", "\<\".\"\>"}],
+  SequenceForm["Number of cranes c equals ", 2, "."],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.9055942145150166`*^9, 3.9055942457537684`*^9}, 
+   3.905594460195692*^9, 3.9055945209844046`*^9, {3.905610744104275*^9, 
+   3.9056107621649*^9}},
+ CellLabel->
+  "During evaluation of \
+In[14]:=",ExpressionUUID->"af87b80d-e8e2-412e-9954-ed795fc7a17b"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Mean interarrival time \[Lambda] equals \"\>", 
+   "\[InvisibleSpace]", "1.25`", "\[InvisibleSpace]", "\<\" per day.\"\>"}],
+  SequenceForm["Mean interarrival time \[Lambda] equals ", 1.25, " per day."],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.9055942145150166`*^9, 3.9055942457537684`*^9}, 
+   3.905594460195692*^9, 3.9055945209844046`*^9, {3.905610744104275*^9, 
+   3.90561076216789*^9}},
+ CellLabel->
+  "During evaluation of \
+In[14]:=",ExpressionUUID->"fbb04aab-60a2-43b9-bb00-0dbbf865ceed"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Lower bound of service time ~ N(1,0.1) is \"\>", 
+   "\[InvisibleSpace]", "0.5`", "\[InvisibleSpace]", "\<\" day(s).\"\>"}],
+  SequenceForm["Lower bound of service time ~ N(1,0.1) is ", 0.5, " day(s)."],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.9055942145150166`*^9, 3.9055942457537684`*^9}, 
+   3.905594460195692*^9, 3.9055945209844046`*^9, {3.905610744104275*^9, 
+   3.9056107621698833`*^9}},
+ CellLabel->
+  "During evaluation of \
+In[14]:=",ExpressionUUID->"14b9cb4f-5337-4e6a-9357-e990d7a9a950"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Upper bound of service time N(1,0.1}) is \"\>", 
+   "\[InvisibleSpace]", "1.5`", "\[InvisibleSpace]", "\<\" day(s).\"\>"}],
+  SequenceForm["Upper bound of service time N(1,0.1}) is ", 1.5, " day(s)."],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.9055942145150166`*^9, 3.9055942457537684`*^9}, 
+   3.905594460195692*^9, 3.9055945209844046`*^9, {3.905610744104275*^9, 
+   3.9056107621728735`*^9}},
+ CellLabel->
+  "During evaluation of \
+In[14]:=",ExpressionUUID->"d5b525db-95ff-4061-9dbe-3ac9750f82ef"],
+
+Cell[BoxData["\<\"=======================================\"\>"], "Print",
+ CellChangeTimes->{{3.9055942145150166`*^9, 3.9055942457537684`*^9}, 
+   3.905594460195692*^9, 3.9055945209844046`*^9, {3.905610744104275*^9, 
+   3.9056107621748667`*^9}},
+ CellLabel->
+  "During evaluation of \
+In[14]:=",ExpressionUUID->"d5f1e3f5-2053-4878-bf9c-2c7d11eda3c3"],
+
+Cell[BoxData["\<\"Results:\"\>"], "Print",
+ CellChangeTimes->{{3.9055942145150166`*^9, 3.9055942457537684`*^9}, 
+   3.905594460195692*^9, 3.9055945209844046`*^9, {3.905610744104275*^9, 
+   3.905610762178854*^9}},
+ CellLabel->
+  "During evaluation of \
+In[14]:=",ExpressionUUID->"129bb8e2-f643-43de-b301-05b1db6be68e"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Duration of the simulation is \"\>", "\[InvisibleSpace]", 
+   "89.96390097278811`", "\[InvisibleSpace]", "\<\" days\"\>"}],
+  SequenceForm["Duration of the simulation is ", 89.96390097278811, " days"],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.9055942145150166`*^9, 3.9055942457537684`*^9}, 
+   3.905594460195692*^9, 3.9055945209844046`*^9, {3.905610744104275*^9, 
+   3.9056107621808505`*^9}},
+ CellLabel->
+  "During evaluation of \
+In[14]:=",ExpressionUUID->"4b002d8c-c9ea-4b2f-a12e-6da7c990e7e1"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"The total number of boats that arrived equals \"\>", 
+   "\[InvisibleSpace]", "61", "\[InvisibleSpace]", "\<\".\"\>"}],
+  SequenceForm["The total number of boats that arrived equals ", 61, "."],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.9055942145150166`*^9, 3.9055942457537684`*^9}, 
+   3.905594460195692*^9, 3.9055945209844046`*^9, {3.905610744104275*^9, 
+   3.905610762183837*^9}},
+ CellLabel->
+  "During evaluation of \
+In[14]:=",ExpressionUUID->"57e06409-b1f6-4ddf-b9c3-e4f425900ab1"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"The average waiting time of boats equals \"\>", 
+   "\[InvisibleSpace]", "0.7748732677543287`", 
+   "\[InvisibleSpace]", "\<\" day(s).\"\>"}],
+  SequenceForm[
+  "The average waiting time of boats equals ", 0.7748732677543287, " day(s)."],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.9055942145150166`*^9, 3.9055942457537684`*^9}, 
+   3.905594460195692*^9, 3.9055945209844046`*^9, {3.905610744104275*^9, 
+   3.9056107621868267`*^9}},
+ CellLabel->
+  "During evaluation of \
+In[14]:=",ExpressionUUID->"c8ca2139-ddcd-496f-9126-d8eecbe982c4"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"The longest waiting time of boats equals \"\>", 
+   "\[InvisibleSpace]", "1.8131699887438741`", 
+   "\[InvisibleSpace]", "\<\" day(s).\"\>"}],
+  SequenceForm[
+  "The longest waiting time of boats equals ", 1.8131699887438741`, 
+   " day(s)."],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.9055942145150166`*^9, 3.9055942457537684`*^9}, 
+   3.905594460195692*^9, 3.9055945209844046`*^9, {3.905610744104275*^9, 
+   3.90561076218882*^9}},
+ CellLabel->
+  "During evaluation of \
+In[14]:=",ExpressionUUID->"0e4ee632-cf05-4ec2-a6ce-e093689ce0c9"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Checks", " ", "result", " ", "consistency", " ", "by", " ", "replication",
+     " ", "to", " ", "check", " ", "simulation", " ", "reliability"}], "*)"}],
+   "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"n", " ", "=", " ", "100"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"simulationResults", " ", "=", " ", 
+     RowBox[{"Table", "[", 
+      RowBox[{
+       RowBox[{"runProgram", "[", "]"}], ",", " ", 
+       RowBox[{"{", 
+        RowBox[{"i", ",", " ", "n"}], "}"}]}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]"}]}]], "Input",
+ CellChangeTimes->{{3.905593176839347*^9, 3.9055933115107713`*^9}, 
+   3.90559365956915*^9, {3.9055937734099245`*^9, 3.905593897547432*^9}, {
+   3.9055941141999254`*^9, 3.9055941273090873`*^9}, 3.9055944309939775`*^9, 
+   3.9055945723618927`*^9},
+ CellLabel->"In[15]:=",ExpressionUUID->"dc253e18-d13e-49a1-83a4-d8760f896310"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "Extract", " ", "the", " ", "first", " ", "and", " ", "second", " ", 
+     "elements", " ", "from", " ", "each", " ", "sub"}], "-", "list"}], 
+   "*)"}], "\n", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"averageWaitingTimes", "=", 
+     RowBox[{"First", "/@", "simulationResults"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"longestWaitingTimes", " ", "=", " ", 
+     RowBox[{"simulationResults", "[", 
+      RowBox[{"[", 
+       RowBox[{"All", ",", "2"}], "]"}], "]"}]}], ";"}], "\n", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Calculate", " ", "the", " ", "average", " ", "of", " ", "the", " ", 
+     "first", " ", "elements"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{"averageOfAverageWaitingTimes", "=", 
+    RowBox[{"Mean", "[", "averageWaitingTimes", "]"}]}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"varianceOfAverageWaitingTimes", "=", 
+    RowBox[{"Variance", "[", "averageWaitingTimes", "]"}]}], "\n", 
+   "\[IndentingNewLine]", 
+   RowBox[{"averageOfLongestWaitingTimes", " ", "=", " ", 
+    RowBox[{"Mean", "[", "longestWaitingTimes", "]"}]}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"varianceOfLongestWaitingTimes", " ", "=", " ", 
+    RowBox[{"Variance", "[", "longestWaitingTimes", "]"}]}], 
+   "\[IndentingNewLine]"}]}]], "Input",
+ CellChangeTimes->{{3.905593893063446*^9, 3.9055939072982063`*^9}, {
+  3.9055939452581806`*^9, 3.905594000837143*^9}, {3.9055940716672325`*^9, 
+  3.905594095364427*^9}},
+ CellLabel->"In[17]:=",ExpressionUUID->"4c5a09e5-2147-4af4-9d65-a3291d9b03a9"],
+
+Cell[BoxData["0.8496378687019103`"], "Output",
+ CellChangeTimes->{{3.9055940974134445`*^9, 3.9055941323107758`*^9}, 
+   3.905594466068739*^9, 3.9055945267685213`*^9, {3.905610747941326*^9, 
+   3.905610769415292*^9}},
+ CellLabel->"Out[19]=",ExpressionUUID->"2db771ab-5285-4c1e-b1aa-2dee07b7beac"],
+
+Cell[BoxData["0.007303211847437746`"], "Output",
+ CellChangeTimes->{{3.9055940974134445`*^9, 3.9055941323107758`*^9}, 
+   3.905594466068739*^9, 3.9055945267685213`*^9, {3.905610747941326*^9, 
+   3.905610769419264*^9}},
+ CellLabel->"Out[20]=",ExpressionUUID->"c5ecd934-6f76-43ca-9a92-8e2a4830fcfb"],
+
+Cell[BoxData["2.1509253560575585`"], "Output",
+ CellChangeTimes->{{3.9055940974134445`*^9, 3.9055941323107758`*^9}, 
+   3.905594466068739*^9, 3.9055945267685213`*^9, {3.905610747941326*^9, 
+   3.9056107694232445`*^9}},
+ CellLabel->"Out[21]=",ExpressionUUID->"c249187b-e0fd-4f51-b3b4-6988ee6f71b8"],
+
+Cell[BoxData["0.13201478571660222`"], "Output",
+ CellChangeTimes->{{3.9055940974134445`*^9, 3.9055941323107758`*^9}, 
+   3.905594466068739*^9, 3.9055945267685213`*^9, {3.905610747941326*^9, 
+   3.905610769426742*^9}},
+ CellLabel->"Out[22]=",ExpressionUUID->"63681f20-c648-44ce-8e58-52f784c77ff0"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1152., 579.6},
+WindowMargins->{{
+  Automatic, -5.399999999999864}, {-5.399999999999977, Automatic}},
+TaggingRules->{
+ "WelcomeScreenSettings" -> {"FEStarting" -> False}, "TryRealOnly" -> False},
+Magnification:>0.9 Inherited,
+FrontEndVersion->"12.1 for Microsoft Windows (64-bit) (June 19, 2020)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"b4350616-ce07-492e-ae7d-02b3dc312b9d"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 168, 6, 93, "Section",ExpressionUUID->"02f556a0-a3d7-41ca-8a4d-d2286b6c6e4c"],
+Cell[751, 30, 5836, 113, 559, "Input",ExpressionUUID->"f2578db5-8760-4695-9c22-7086f03e80f0"],
+Cell[6590, 145, 767, 16, 56, "Input",ExpressionUUID->"798cb20d-4a51-4d80-9761-8fb58d5cae41"],
+Cell[7360, 163, 3294, 69, 308, "Input",ExpressionUUID->"1ebaa51f-bc7c-4134-9f7b-04df161632e9"],
+Cell[10657, 234, 1345, 27, 108, "Input",ExpressionUUID->"bbb4efa3-5a99-4316-ab88-14a4708dbf4e"],
+Cell[12005, 263, 1161, 25, 157, "Input",ExpressionUUID->"eb1cf0a6-ce56-46c7-b6ef-0e398d5cd867"],
+Cell[13169, 290, 1113, 25, 157, "Input",ExpressionUUID->"88c4080f-30d9-4d37-b79e-d4e5c079899d"],
+Cell[14285, 317, 1412, 29, 110, "Input",ExpressionUUID->"2b187b6d-b069-4092-bf39-f01081e4b4c4"],
+Cell[15700, 348, 6311, 125, 668, "Input",ExpressionUUID->"b4a35ca2-0efa-4a58-9170-a6113db435e0"],
+Cell[22014, 475, 4585, 91, 382, "Input",ExpressionUUID->"40cb10c5-bd2e-43e4-b6e5-0e37d247701e"],
+Cell[26602, 568, 8069, 156, 722, "Input",ExpressionUUID->"f3326170-8266-4e87-ad5d-b57cb0ff0e29"],
+Cell[34674, 726, 3473, 69, 399, "Input",ExpressionUUID->"90d03448-c50d-4231-a33c-08f063267249"],
+Cell[38150, 797, 3425, 72, 527, "Input",ExpressionUUID->"e22feb45-6079-46d3-80ac-d1c8e16cddc7"],
+Cell[41578, 871, 3401, 68, 315, "Input",ExpressionUUID->"664d2979-1699-42bd-a7a4-067d64b19a9f"],
+Cell[CellGroupData[{
+Cell[45004, 943, 608, 11, 43, "Input",ExpressionUUID->"caa52580-ea49-4769-adba-f3a1d1e8ce4f"],
+Cell[CellGroupData[{
+Cell[45637, 958, 348, 6, 20, "Print",ExpressionUUID->"3cbed9c1-f3e0-4214-8a1b-ac9dd84d3837"],
+Cell[45988, 966, 351, 6, 20, "Print",ExpressionUUID->"5e095abd-fde1-4a08-9e16-207239c60902"],
+Cell[46342, 974, 350, 6, 20, "Print",ExpressionUUID->"f427a3b3-7c7a-4062-b625-609bc14e4469"],
+Cell[46695, 982, 325, 6, 20, "Print",ExpressionUUID->"6a0d371a-b238-4b6d-ab0b-081580410606"],
+Cell[47023, 990, 504, 11, 20, "Print",ExpressionUUID->"af87b80d-e8e2-412e-9954-ed795fc7a17b"],
+Cell[47530, 1003, 556, 11, 20, "Print",ExpressionUUID->"fbb04aab-60a2-43b9-bb00-0dbbf865ceed"],
+Cell[48089, 1016, 559, 11, 20, "Print",ExpressionUUID->"14b9cb4f-5337-4e6a-9357-e990d7a9a950"],
+Cell[48651, 1029, 557, 11, 20, "Print",ExpressionUUID->"d5b525db-95ff-4061-9dbe-3ac9750f82ef"],
+Cell[49211, 1042, 350, 6, 20, "Print",ExpressionUUID->"d5f1e3f5-2053-4878-bf9c-2c7d11eda3c3"],
+Cell[49564, 1050, 317, 6, 20, "Print",ExpressionUUID->"129bb8e2-f643-43de-b301-05b1db6be68e"],
+Cell[49884, 1058, 557, 11, 20, "Print",ExpressionUUID->"4b002d8c-c9ea-4b2f-a12e-6da7c990e7e1"],
+Cell[50444, 1071, 548, 11, 20, "Print",ExpressionUUID->"57e06409-b1f6-4ddf-b9c3-e4f425900ab1"],
+Cell[50995, 1084, 594, 13, 20, "Print",ExpressionUUID->"c8ca2139-ddcd-496f-9126-d8eecbe982c4"],
+Cell[51592, 1099, 596, 14, 20, "Print",ExpressionUUID->"0e4ee632-cf05-4ec2-a6ce-e093689ce0c9"]
+}, Open  ]]
+}, Open  ]],
+Cell[52215, 1117, 944, 22, 93, "Input",ExpressionUUID->"dc253e18-d13e-49a1-83a4-d8760f896310"],
+Cell[CellGroupData[{
+Cell[53184, 1143, 1623, 38, 306, "Input",ExpressionUUID->"4c5a09e5-2147-4af4-9d65-a3291d9b03a9"],
+Cell[54810, 1183, 295, 4, 29, "Output",ExpressionUUID->"2db771ab-5285-4c1e-b1aa-2dee07b7beac"],
+Cell[55108, 1189, 297, 4, 29, "Output",ExpressionUUID->"c5ecd934-6f76-43ca-9a92-8e2a4830fcfb"],
+Cell[55408, 1195, 297, 4, 29, "Output",ExpressionUUID->"c249187b-e0fd-4f51-b3b4-6988ee6f71b8"],
+Cell[55708, 1201, 296, 4, 29, "Output",ExpressionUUID->"63681f20-c648-44ce-8e58-52f784c77ff0"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+

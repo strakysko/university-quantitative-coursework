@@ -1,0 +1,1013 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     47233,       1004]
+NotebookOptionsPosition[     45578,        952]
+NotebookOutlinePosition[     46108,        973]
+CellTagsIndexPosition[     46065,        970]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[TextData[{
+ "M/G/c bank example\n",
+ StyleBox["Mathematica",
+  FontSlant->"Italic"],
+ " code accompanying handout for the course ",
+ StyleBox["Stochastic Simulation\n",
+  FontSlant->"Italic"],
+ "Jan-Pieter Dorsman / April 15 2017"
+}], "Text",
+ CellChangeTimes->{{3.7010700492616453`*^9, 3.701070056501645*^9}, {
+  3.7010714677524195`*^9, 3.7010715280864525`*^9}, {3.7012380244355927`*^9, 
+  3.7012380245701284`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Function", " ", "that", " ", "defines", " ", "parameters", " ", "and", 
+    " ", "performs", " ", "preliminary", " ", "work"}], " ", "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"preliminaries", "[", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+      RowBox[{"(*", " ", 
+       RowBox[{"Model", " ", "parameters"}], " ", "*)"}], "\t\t\t\t\t\t", 
+      "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+      RowBox[{
+       RowBox[{"c", " ", "=", "3"}], ";", " ", 
+       RowBox[{"(*", " ", 
+        RowBox[{"Number", " ", "of", " ", "bank", " ", "clerks"}], " ", 
+        "*)"}], "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"\[Lambda]", " ", "=", " ", "60"}], ";", " ", 
+       RowBox[{"(*", " ", 
+        RowBox[{"Arrival", " ", "rate"}], " ", "*)"}], "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t", 
+       RowBox[{"lowerParamServiceTime", " ", "=", " ", "0"}], ";", " ", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+        "The", " ", "lower", " ", "bound", " ", "on", " ", "the", " ", 
+         "uniform", " ", "service", " ", "time"}], " ", "*)"}], 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"upperParamServiceTime", " ", "=", " ", 
+        FractionBox["1", "15"]}], ";", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+        "The", " ", "upper", " ", "bound", " ", "on", " ", "the", " ", 
+         "uniform", " ", "service", " ", "time"}], " ", "*)"}], 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"numberOfHoursInADay", " ", "=", "7"}], ";", " ", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+        "The", " ", "number", " ", "of", " ", "hours", " ", "to", " ", "be", 
+         " ", "simulated"}], " ", "*)"}], "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t", "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"(*", " ", "Definitions", " ", "*)"}], "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t", 
+       RowBox[{"KINDARRIVAL", " ", "=", "1"}], ";", "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t", 
+       RowBox[{"KINDDEPARTURE", " ", "=", "2"}], ";", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"(*", " ", 
+        RowBox[{"Statistical", " ", "Counters"}], " ", "*)"}], 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"totalNumberOfArrivals", " ", "=", " ", "0"}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"totalWaitingTimeOfCustomers", " ", "=", "0"}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"totalAmountOfTimeClerkIsBusy", " ", "=", "0"}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"totalSurfaceUnderGraph", " ", "=", " ", "0"}], ";", " ", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+        "counter", " ", "used", " ", "for", " ", "the", " ", "average", " ", 
+         "queue", " ", "length"}], " ", "*)"}], "\t\t\t\t\t", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t", 
+       RowBox[{"(*", " ", 
+        RowBox[{"Other", " ", "parameters"}], " ", "*)"}], 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"eventList", " ", "=", " ", 
+        RowBox[{"{", "}"}]}], ";", " ", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+         RowBox[{
+         "Events", " ", "in", " ", "the", " ", "list", " ", "have", " ", 
+          "the", " ", "form", " ", 
+          RowBox[{"{", 
+           RowBox[{"timeOfOccurence", ",", " ", "kind"}], "}"}]}], ",", " ", 
+         RowBox[{"e", ".", "g", ".", " ", 
+          RowBox[{"{", 
+           RowBox[{"5.2857", ",", " ", "KINDDEPARTURE"}], "}"}]}]}], " ", 
+        "*)"}], "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"queue", " ", "=", " ", 
+        RowBox[{"{", "}"}]}], ";", " ", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+         RowBox[{
+         "Customers", " ", "in", " ", "the", " ", "queue", " ", "have", " ", 
+          "the", " ", "form", " ", 
+          RowBox[{"{", 
+           RowBox[{"time", " ", "of", " ", "arrival"}], "}"}]}], ",", " ", 
+         RowBox[{"e", ".", "g", ".", " ", 
+          RowBox[{"{", "3.4874", "}"}]}]}], " ", "*)"}], 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"simulationClock", " ", "=", " ", "0"}], ";", " ", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"currentNumberOfClerksBusy", " ", "=", " ", "0"}], ";"}]}], 
+     "\t\t\t\t\t\t\t\t", "\[IndentingNewLine]", "\t\t\t\t\t\t\t", 
+     "\[IndentingNewLine]", "\[IndentingNewLine]", "\t\t\t\t\t  ", "]"}]}], 
+   ";"}]}]], "Input",
+ CellChangeTimes->{{3.701069909073645*^9, 3.7010700475186453`*^9}, {
+   3.701070236307645*^9, 3.7010702522026453`*^9}, {3.7010703254626455`*^9, 
+   3.701070399411645*^9}, {3.7010707570393553`*^9, 3.701070950784728*^9}, {
+   3.7010709823628855`*^9, 3.7010710380364523`*^9}, {3.701071085167165*^9, 
+   3.7010711175053988`*^9}, {3.701071166483296*^9, 3.701071209890636*^9}, {
+   3.7010713374353895`*^9, 3.7010713677084165`*^9}, {3.701071422790924*^9, 
+   3.7010714558962345`*^9}, {3.7010716088145247`*^9, 
+   3.7010716727009125`*^9}, {3.7010826829788675`*^9, 3.701082754390008*^9}, {
+   3.701082971383705*^9, 3.7010830254411106`*^9}, {3.701083058307397*^9, 
+   3.7010831391194773`*^9}, {3.701083221425707*^9, 3.7010833623127947`*^9}, {
+   3.7010838789354515`*^9, 3.701083936841242*^9}, {3.7010839830032663`*^9, 
+   3.701083987922758*^9}, {3.701084041062071*^9, 3.7010840777297373`*^9}, {
+   3.701084281004086*^9, 3.7010842845287333`*^9}, {3.7010847947725773`*^9, 
+   3.7010848041515775`*^9}, {3.7010848454645777`*^9, 
+   3.7010848496535773`*^9}, {3.7010862909610667`*^9, 
+   3.7010863296279335`*^9}, {3.701086755271493*^9, 3.7010867796629324`*^9}, {
+   3.7012305838066487`*^9, 3.7012306154299593`*^9}, {3.701230714877304*^9, 
+   3.7012307153248644`*^9}, {3.701231800500636*^9, 3.7012318244844813`*^9}, {
+   3.7012318889265594`*^9, 3.7012318928624883`*^9}, {3.701231952404891*^9, 
+   3.7012319562127886`*^9}, {3.701232285700732*^9, 3.7012322859733024`*^9}, {
+   3.7012330793586826`*^9, 3.7012331228454485`*^9}, {3.701234435356723*^9, 
+   3.7012344500482073`*^9}, 3.70123470009249*^9, {3.70123609878969*^9, 
+   3.701236098861143*^9}, {3.7012370065016565`*^9, 3.7012370451582384`*^9}, {
+   3.7012373004685764`*^9, 3.7012373292129374`*^9}, {3.7012373753157935`*^9, 
+   3.701237375515894*^9}, {3.7012374400288305`*^9, 3.701237459956994*^9}, {
+   3.7012375021895123`*^9, 3.701237525109167*^9}, {3.7012375850627804`*^9, 
+   3.7012375851980343`*^9}, 3.7012379247424192`*^9, {3.7012445479207163`*^9, 
+   3.7012445511756983`*^9}, {3.701244693488809*^9, 3.701244718568051*^9}, {
+   3.701244821040526*^9, 3.701244835392755*^9}, 3.7012454699115005`*^9, {
+   3.701245716087529*^9, 3.7012457447445564`*^9}, 3.710426088673814*^9, 
+   3.714655849749281*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{
+    "Function", " ", "that", " ", "draws", " ", "a", " ", "number", " ", 
+     "from", " ", "the", " ", "uniform", " ", "distribution", " ", 
+     RowBox[{"on", " ", "[", 
+      RowBox[{"a", ",", "b"}], "]"}]}], ",", " ", 
+    RowBox[{
+    "using", " ", "a", " ", "standard", " ", "uniform", " ", "sample", " ", 
+     "given", " ", "by", " ", "the", " ", "function", " ", 
+     RowBox[{"RandomReal", "[", "]"}]}]}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"drawUniformNumber", "[", 
+     RowBox[{"a_", ",", " ", "b_"}], "]"}], "  ", ":=", " ", 
+    RowBox[{"a", " ", "+", " ", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"b", "-", "a"}], ")"}], " ", "*", " ", 
+      RowBox[{"RandomReal", "[", "]"}]}]}]}], ";"}]}]], "Input",
+ CellChangeTimes->{{3.7010715545641003`*^9, 3.701071603995043*^9}, {
+   3.7010716980474467`*^9, 3.7010717844740887`*^9}, 3.7012454196684675`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Function", " ", "that", " ", "draws", " ", "a", " ", "number", " ", 
+    "from", " ", "the", " ", "exponential", " ", 
+    RowBox[{"(", " ", 
+     RowBox[{"distribution", ",", " ", 
+      RowBox[{
+      "using", " ", "a", " ", "standard", " ", "uniform", " ", "sample", " ", 
+       "given", " ", "by", " ", "the", " ", "function", " ", 
+       RowBox[{"RandomReal", "[", "]"}]}]}], " "}]}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"drawExponentialNumber", "[", "rate_", "]"}], " ", ":=", " ", 
+    FractionBox[
+     RowBox[{"-", 
+      RowBox[{"Log", "[", 
+       RowBox[{"RandomReal", "[", "]"}], "]"}]}], "rate"]}], ";"}]}]], "Input",
+ CellChangeTimes->{{3.701071757193361*^9, 3.701071792474889*^9}, {
+   3.7010820943390093`*^9, 3.7010821345630317`*^9}, {3.701082544609032*^9, 
+   3.701082572073778*^9}, {3.7010844315730276`*^9, 3.7010844373174534`*^9}, 
+   3.7010850108635774`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Function", " ", "that", " ", "adds", " ", "an", " ", "event", " ", "to", 
+    " ", "the", " ", "event", " ", "list"}], " ", "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"addEventToEventList", "[", "event_", "]"}], " ", ":=", " ", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t", 
+       RowBox[{
+        RowBox[{"eventList", "  ", "=", " ", 
+         RowBox[{"Sort", "[", 
+          RowBox[{"Append", "[", 
+           RowBox[{"eventList", ",", " ", "event"}], "]"}], "]"}]}], ";"}]}], 
+      "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t", "]"}]}], ";"}], 
+   "\[IndentingNewLine]"}]}]], "Input",
+ CellChangeTimes->{{3.7010849904835777`*^9, 3.7010851439355774`*^9}, {
+  3.7010855424885774`*^9, 3.7010855495685773`*^9}, {3.701086309445915*^9, 
+  3.70108632579755*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Function", " ", "that", " ", "removes", " ", "the", " ", "next", " ", 
+    "event", " ", "from", " ", "the", " ", "event", " ", "list", " ", "and", 
+    " ", "returns", " ", "it"}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"removeAndReturnNextEventFromList", "[", "]"}], " ", ":=", " ", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", "nextEvent", "}"}], ",", "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t\t\t\t\t\t", 
+       RowBox[{
+        RowBox[{"nextEvent", " ", "=", " ", 
+         RowBox[{"First", "[", "eventList", "]"}]}], ";", 
+        "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t", 
+        RowBox[{"eventList", " ", "=", " ", 
+         RowBox[{"Drop", "[", 
+          RowBox[{"eventList", ",", " ", "1"}], "]"}]}], ";", 
+        "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t", "nextEvent"}]}], 
+      "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t", "]"}]}], ";"}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+    "Function", " ", "that", " ", "removes", " ", "the", " ", "next", " ", 
+     "customer", " ", "from", " ", "the", " ", "queue", " ", "and", " ", 
+     "returns", " ", "it"}], " ", "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"removeAndReturnNextCustomerFromQueue", "[", "]"}], " ", ":=", 
+     " ", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", "nextCustomer", "}"}], ",", "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t\t\t\t\t\t", 
+       RowBox[{
+        RowBox[{"nextCustomer", " ", "=", " ", 
+         RowBox[{"First", "[", "queue", "]"}]}], ";", "\[IndentingNewLine]", 
+        "\t\t\t\t\t\t\t\t\t\t\t", 
+        RowBox[{"queue", " ", "=", " ", 
+         RowBox[{"Drop", "[", 
+          RowBox[{"queue", ",", " ", "1"}], "]"}]}], ";", 
+        "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t", "nextCustomer"}]}], 
+      "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t", "]"}]}], ";"}], 
+   "\t\t\t\t\t"}]}]], "Input",
+ CellChangeTimes->{{3.7010857533633127`*^9, 3.701085782623238*^9}, {
+  3.70108584104908*^9, 3.7010859207730517`*^9}, {3.701086121853158*^9, 
+  3.7010861338783603`*^9}, {3.7010862291058817`*^9, 3.7010862373227034`*^9}, {
+  3.7010862704360147`*^9, 3.70108628469244*^9}, {3.7010863185178223`*^9, 
+  3.701086322607231*^9}, {3.701232752731244*^9, 3.7012327835722003`*^9}, {
+  3.701236567059125*^9, 3.7012365754022818`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{"Function", " ", "that", " ", "starts", " ", "the", " ", 
+    RowBox[{"simulation", ":", " ", 
+     RowBox[{
+     "schedules", " ", "the", " ", "first", " ", "arrival", " ", "to", " ", 
+      "start", " ", "up", " ", "the", " ", "event", " ", "list"}]}]}], " ", 
+   "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"initialise", "[", "]"}], " ", ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", "\t\t\t\t\t", 
+      RowBox[{
+       RowBox[{"firstArrivalTime", " ", "=", " ", 
+        RowBox[{"drawExponentialNumber", "[", "\[Lambda]", "]"}]}], ";", 
+       "\t\t\t\t", "\[IndentingNewLine]", "\t\t\t\t\t", 
+       RowBox[{"addEventToEventList", "[", 
+        RowBox[{"{", 
+         RowBox[{"firstArrivalTime", ",", " ", "KINDARRIVAL"}], "}"}], "]"}], 
+       ";"}]}], " ", "\[IndentingNewLine]", "\t\t\t\t", "]"}]}], 
+   ";"}]}]], "Input",
+ CellChangeTimes->{{3.701071753816023*^9, 3.701071753929034*^9}, {
+   3.7010843058156047`*^9, 3.701084365483637*^9}, {3.701084404831702*^9, 
+   3.701084453096875*^9}, {3.7010847224875774`*^9, 3.7010847606135774`*^9}, {
+   3.7010848120345774`*^9, 3.7010848642645774`*^9}, {3.701084894814577*^9, 
+   3.7010848950375776`*^9}, 3.701086152686241*^9, {3.701086336166587*^9, 
+   3.701086346934664*^9}, {3.701233785003931*^9, 3.701233789123809*^9}, {
+   3.7012338198026953`*^9, 3.701233822603839*^9}, {3.70123610363424*^9, 
+   3.701236103827109*^9}, 3.7012370196573963`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Function", " ", "that", " ", "processes", " ", "an", " ", "arrival", " ", 
+    "event"}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"handleArrivalEvent", "[", "arrivalTime_", "]"}], " ", ":=", " ", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"nextArrivalTime", ",", " ", "serviceTime"}], "}"}], ",", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t", 
+       RowBox[{"(*", " ", 
+        RowBox[{"Handle", " ", "the", " ", "arrival"}], " ", "*)"}], 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t", 
+       RowBox[{
+        RowBox[{"totalNumberOfArrivals", " ", "+=", " ", "1"}], ";", 
+        "\t\t\t\t", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+        "\t\t\t\t\t\t\t\t\t\t\t", 
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{"currentNumberOfClerksBusy", " ", "<", " ", "c"}], ",", 
+          "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t\t", 
+          RowBox[{"(*", " ", 
+           RowBox[{
+           "The", " ", "arriving", " ", "customer", " ", "can", " ", "be", 
+            " ", "taken", " ", "into", " ", "service", " ", "immediately"}], 
+           " ", "*)"}], "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t\t", 
+          RowBox[{
+           RowBox[{"serviceTime", " ", "=", " ", 
+            RowBox[{"drawUniformNumber", "[", 
+             RowBox[{
+             "lowerParamServiceTime", ",", " ", "upperParamServiceTime"}], 
+             "]"}]}], ";", "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t\t", 
+           RowBox[{"addEventToEventList", "[", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"simulationClock", " ", "+", " ", "serviceTime"}], ",", 
+              " ", "KINDDEPARTURE"}], "}"}], "]"}], ";", 
+           "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t\t", 
+           RowBox[{"currentNumberOfClerksBusy", " ", "+=", "1"}]}], 
+          "\t\t\t\t\t\t\t\t\t\t\t\t", "\[IndentingNewLine]", 
+          "\t\t\t\t\t\t\t\t\t\t\t", ",", "\[IndentingNewLine]", 
+          "\t\t\t\t\t\t\t\t\t\t\t\t ", 
+          RowBox[{"(*", " ", 
+           RowBox[{
+           "The", " ", "arriving", " ", "customer", " ", "is", " ", "forced", 
+            " ", "to", " ", "queue"}], " ", "*)"}], " ", 
+          "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t\t\t", 
+          RowBox[{
+           RowBox[{"queue", " ", "=", " ", 
+            RowBox[{"Append", "[", 
+             RowBox[{"queue", ",", " ", "arrivalTime"}], "]"}]}], ";"}]}], 
+         "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t", "]"}], ";", 
+        "\[IndentingNewLine]", "\[IndentingNewLine]", 
+        "\t\t\t\t\t\t\t\t\t\t\t", 
+        RowBox[{"(*", " ", 
+         RowBox[{
+          RowBox[{
+          "Now", " ", "that", " ", "the", " ", "arrival", " ", "is", " ", 
+           "handled"}], ",", " ", 
+          RowBox[{"schedule", " ", "the", " ", "next", " ", "arrival"}]}], 
+         " ", "*)"}], "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t", 
+        RowBox[{"nextArrivalTime", " ", "=", " ", 
+         RowBox[{"simulationClock", " ", "+", " ", 
+          RowBox[{"drawExponentialNumber", "[", "\[Lambda]", "]"}]}]}], ";", 
+        "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t", 
+        RowBox[{"addEventToEventList", "[", 
+         RowBox[{"{", 
+          RowBox[{"nextArrivalTime", ",", " ", "KINDARRIVAL"}], "}"}], "]"}], 
+        ";"}]}], "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t", "]"}]}], ";"}], 
+   "\t\t\t\t\t", "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t", 
+   "\[IndentingNewLine]", "\t\t\t\t\t\t\t"}]}]], "Input",
+ CellChangeTimes->CompressedData["
+1:eJxTTMoPSmViYGAQBWIQrZf8RtV58mvHO4euaoHoOdvfmYLo9aX6ZiB6wqwE
+HxC9oaIVTPMEc5V1AumTFQJgumhP/3IQvc1vyjYQ/UC3YheInlfzG0LP0XoL
+ol2TDvwG0VNU1jB0AelzCd8EQfQuzUVSIFpgLb88iOb566IMohdo9qiA6IaQ
+IF0QPWmHsx6I/pJ/2AxEvzKL8ALRFy5/CgHR085JRYLojdJ8M0H0Hx8IzaHb
+swREn9V/AKZFzHsEu4E0a6ehEIj+setnbA+Q1kpjigPRyskPk0H0ofN3U0D0
+d7fSxSA69PuspSC65oTLehA9pSMKTEvNeX5hApDOl997CUQDAI6rsaE=
+  "]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Function", " ", "that", " ", "processes", " ", "a", " ", "departure", " ",
+     "event"}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"handleDepartureEvent", "[", "departureTime_", "]"}], " ", ":=", 
+    " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "nextServiceTime", "}"}], ",", "\[IndentingNewLine]", 
+      "\t\t\t\t\t\t\t\t\t\t\t", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+       "Check", " ", "whether", " ", "there", " ", "is", " ", "a", " ", 
+        "customer", " ", "queued", " ", 
+        RowBox[{"up", "."}]}], "  ", "*)"}], "\[IndentingNewLine]", "\t", 
+      "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t", 
+      RowBox[{
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Length", "[", "queue", "]"}], " ", ">", " ", "0"}], ",", 
+         "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t\t", 
+         RowBox[{"(*", " ", 
+          RowBox[{"There", " ", "is", " ", "a", " ", "customer", " ", 
+           RowBox[{"queued", ":", " ", 
+            RowBox[{
+            "put", " ", "this", " ", "customer", " ", "into", " ", "service", 
+             " ", "and", " ", "schedule", " ", "departure"}]}]}], " ", "*)"}],
+          "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t\t", 
+         RowBox[{
+          RowBox[{"arrivalTimeOfCustomerToBePutIntoService", " ", "=", " ", 
+           RowBox[{"removeAndReturnNextCustomerFromQueue", "[", "]"}]}], ";", 
+          "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t\t", 
+          RowBox[{"totalWaitingTimeOfCustomers", " ", "+=", " ", 
+           RowBox[{"(", 
+            RowBox[{
+            "simulationClock", "\[IndentingNewLine]", 
+             "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t", "-", 
+             "arrivalTimeOfCustomerToBePutIntoService"}], ")"}]}], ";", 
+          "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t\t", 
+          "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t\t", 
+          RowBox[{"nextserviceTime", " ", "=", " ", 
+           RowBox[{"drawUniformNumber", "[", 
+            RowBox[{
+            "lowerParamServiceTime", ",", " ", "upperParamServiceTime"}], 
+            "]"}]}], ";", "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t\t", 
+          RowBox[{"addEventToEventList", "[", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"simulationClock", " ", "+", " ", "nextserviceTime"}], 
+             ",", "KINDDEPARTURE"}], "}"}], "]"}], ";"}], 
+         "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t", ",", 
+         "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t\t", 
+         RowBox[{"(*", " ", 
+          RowBox[{"There", " ", "is", " ", "no", " ", "customer", " ", 
+           RowBox[{"queued", ":", " ", 
+            RowBox[{
+            "make", " ", "the", " ", "clerk", " ", "available", " ", 
+             "again"}]}]}], " ", "*)"}], "\[IndentingNewLine]", 
+         "\t\t\t\t\t\t\t\t\t\t\t\t", 
+         RowBox[{
+          RowBox[{"currentNumberOfClerksBusy", " ", "-=", "1"}], ";"}]}], 
+        "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t\t", "]"}], ";"}]}], 
+     "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t\t\t", "]"}]}], ";"}], 
+  "\t\t\t\t"}]], "Input",
+ CellChangeTimes->{{3.701232337834776*^9, 3.7012325041648207`*^9}, {
+   3.701232581084009*^9, 3.701232635203727*^9}, {3.7012326831958203`*^9, 
+   3.7012327442921176`*^9}, {3.7012327987957335`*^9, 
+   3.7012328652994394`*^9}, {3.701232903965184*^9, 3.701233039428136*^9}, {
+   3.7012350133905315`*^9, 3.701235014157445*^9}, {3.7012361414608555`*^9, 
+   3.7012362122430105`*^9}, {3.701236438068307*^9, 3.701236478829462*^9}, {
+   3.701236615399378*^9, 3.701236625115016*^9}, {3.7012366781549463`*^9, 
+   3.701236759979351*^9}, 3.701237036847705*^9, {3.7012370834760284`*^9, 
+   3.701237090500086*^9}, {3.7012455156305456`*^9, 3.7012455162533197`*^9}, {
+   3.701245604350306*^9, 3.7012456205528755`*^9}, {3.7012460199099407`*^9, 
+   3.70124602636481*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Function", " ", "that", " ", "takes", " ", "the", " ", "next", " ", 
+    "event", " ", "from", " ", "the", " ", "event", " ", "list", " ", "and", 
+    " ", "processes", " ", 
+    RowBox[{"it", "."}]}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"handleNextEvent", "[", "]"}], " ", ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"nextEvent", ",", " ", "eventTime", ",", " ", "eventKind"}], 
+       "}"}], ",", "\[IndentingNewLine]", "\t\t\t\t\t\t\t", 
+      RowBox[{
+       RowBox[{"nextEvent", " ", "=", " ", 
+        RowBox[{"removeAndReturnNextEventFromList", "[", "]"}]}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t\t", 
+       RowBox[{"eventTime", " ", "=", " ", 
+        RowBox[{"nextEvent", "[", 
+         RowBox[{"[", "1", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t\t", 
+       RowBox[{"eventKind", " ", "=", " ", 
+        RowBox[{"nextEvent", "[", 
+         RowBox[{"[", "2", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t\t", 
+       RowBox[{"(*", " ", 
+        RowBox[{"Update", " ", "counters", " ", "and", " ", "parameters"}], 
+        " ", "*)"}], "\[IndentingNewLine]", "\t\t\t\t\t\t\t", 
+       RowBox[{"totalSurfaceUnderGraph", " ", "+=", " ", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"eventTime", " ", "-", " ", "simulationClock"}], ")"}], "*", 
+         RowBox[{"Length", "[", "queue", "]"}]}]}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t\t", 
+       RowBox[{"totalAmountOfTimeClerkIsBusy", " ", "+=", " ", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"eventTime", " ", "-", " ", "simulationClock"}], ")"}], "*",
+          "currentNumberOfClerksBusy"}]}], ";", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t\t", 
+       RowBox[{"simulationClock", " ", "=", " ", "eventTime"}], ";", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", "\t\t\t\t\t\t\t", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+        "Checks", " ", "whether", " ", "the", " ", "next", " ", "event", " ", 
+         "is", " ", "an", " ", "arrival", " ", "or", " ", "a", " ", 
+         "departure", " ", "and", " ", "calls", " ", "functions", " ", 
+         "accordingly"}], " ", "*)"}], "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t\t", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"eventKind", "==", "KINDARRIVAL"}], " ", ",", " ", 
+         "\[IndentingNewLine]", "\t\t\t\t\t\t\t\t", 
+         RowBox[{
+          RowBox[{"handleArrivalEvent", "[", "eventTime", "]"}], ";"}], " ", 
+         "\[IndentingNewLine]", "\t\t\t\t\t\t\t", ",", "\[IndentingNewLine]", 
+         "\t\t\t\t\t\t\t\t", 
+         RowBox[{
+          RowBox[{"handleDepartureEvent", "[", "eventTime", "]"}], ";"}]}], 
+        "\[IndentingNewLine]", "\t\t\t\t\t\t\t", "]"}], ";"}]}], 
+     "\[IndentingNewLine]", "\t\t\t\t\t\t", "]"}]}], ";"}], 
+  "\t\t\t\t\t\t"}]], "Input",
+ CellChangeTimes->{{3.701086159764949*^9, 3.7010862654835196`*^9}, {
+   3.7010863562545958`*^9, 3.7010864984378123`*^9}, {3.701086537991768*^9, 
+   3.7010865399279613`*^9}, {3.7010866597419415`*^9, 3.701086686102577*^9}, {
+   3.7012302678940363`*^9, 3.701230271499864*^9}, {3.701230515164649*^9, 
+   3.7012305722596364`*^9}, {3.701230623660281*^9, 3.70123066372408*^9}, {
+   3.7012307336760798`*^9, 3.7012308133010497`*^9}, {3.701230851300922*^9, 
+   3.7012308956690025`*^9}, {3.7012331869723983`*^9, 3.701233189948389*^9}, {
+   3.7012358008527575`*^9, 3.7012358477403793`*^9}, {3.70123610853963*^9, 
+   3.701236108860376*^9}, 3.701236185620109*^9, 3.7012362162352486`*^9, 
+   3.7012367918700676`*^9, {3.701236825268342*^9, 3.701236829885107*^9}, {
+   3.701236936436061*^9, 3.701236951616344*^9}, 3.7012370196704273`*^9, {
+   3.7012370755333157`*^9, 3.70123707582793*^9}, {3.7012371095091195`*^9, 
+   3.701237109844095*^9}, {3.7012373639325714`*^9, 3.701237366944749*^9}, {
+   3.7012454372002497`*^9, 3.701245457558316*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Function", " ", "that", " ", "reports", " ", "the", " ", "input", " ", 
+    "parameters", " ", "and", " ", "the", " ", "findings", " ", "of", " ", 
+    "the", " ", "simulation", " ", "program"}], " ", "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"report", "[", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+      RowBox[{
+       RowBox[{
+       "Print", "[", "\"\<========================================\>\"", 
+        "]"}], ";", "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{
+       "Print", "[", "\"\<= Simulation run of M/G/c bank example =\>\"", 
+        "]"}], ";", "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{
+       "Print", "[", "\"\<========================================\>\"", 
+        "]"}], ";", "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"Print", "[", "\"\<Input parameters:\>\"", "]"}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"Print", "[", 
+        RowBox[{"\"\<c equals \>\"", ",", " ", "c", ",", " ", "\"\<.\>\""}], 
+        "]"}], ";", "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"Print", "[", 
+        RowBox[{
+        "\"\<\[Lambda] equals \>\"", ",", " ", "\[Lambda]", ",", " ", 
+         "\"\< per hour.\>\""}], "]"}], ";", "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t", 
+       RowBox[{"Print", "[", 
+        RowBox[{
+        "\"\<Lower bound on uniform service time is \>\"", ",", " ", 
+         "lowerParamServiceTime", ",", " ", "\"\< hours.\>\""}], "]"}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"Print", "[", 
+        RowBox[{
+        "\"\<Upper bound on uniform service time = \>\"", ",", " ", 
+         "upperParamServiceTime", ",", " ", "\"\< hours.\>\""}], "]"}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"Print", "[", 
+        RowBox[{
+        "\"\<Number of hours in a day equals \>\"", ",", " ", 
+         "numberOfHoursInADay", ",", " ", "\"\<.\>\""}], "]"}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{
+       "Print", "[", "\"\<========================================\>\"", 
+        "]"}], ";", "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"Print", "[", "\"\<Results:\>\"", "]"}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"Print", "[", 
+        RowBox[{
+        "\"\<Duration of the simulation is \>\"", ",", " ", "simulationClock",
+          ",", " ", "\"\< hours\>\""}], "]"}], ";", "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t", "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"Print", "[", 
+        RowBox[{
+        "\"\<The total number of customers that arrived equals \>\"", ",", 
+         " ", "totalNumberOfArrivals", " ", ",", "\"\<.\>\""}], "]"}], ";", 
+       "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"Print", "[", 
+        RowBox[{
+        "\"\<The average queue length during the day equals \>\"", ",", " ", 
+         RowBox[{"totalSurfaceUnderGraph", "/", "simulationClock"}], " ", 
+         ",", "\"\<.\>\""}], "]"}], ";", "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t", 
+       RowBox[{"Print", "[", 
+        RowBox[{
+        "\"\<The average waiting time of customers equals \>\"", ",", " ", 
+         RowBox[{
+         "totalWaitingTimeOfCustomers", " ", "/", " ", 
+          "totalNumberOfArrivals"}], ",", " ", "\"\< hour(s).\>\""}], "]"}], 
+       ";", "\[IndentingNewLine]", "\t\t\t\t\t\t", 
+       RowBox[{"Print", "[", 
+        RowBox[{
+        "\"\<The average fraction of the time a bank clerk has been busy \
+equals \>\"", ",", " ", 
+         RowBox[{
+          RowBox[{
+          "totalAmountOfTimeClerkIsBusy", " ", "/", " ", "simulationClock"}], 
+          " ", "/", " ", "c"}], ",", " ", "\"\<.\>\""}], "]"}], ";"}]}], 
+     "\[IndentingNewLine]", "\[IndentingNewLine]", "\t\t\t", "]"}]}], 
+   ";"}]}]], "Input",
+ CellChangeTimes->{{3.701233250832407*^9, 3.7012336308482995`*^9}, {
+   3.701233662715305*^9, 3.701233771269388*^9}, {3.701234292900744*^9, 
+   3.701234409548233*^9}, {3.7012345214116325`*^9, 3.7012345390750384`*^9}, {
+   3.701234608323786*^9, 3.7012346136033535`*^9}, {3.7012346786831493`*^9, 
+   3.701234794793335*^9}, {3.7012359029343023`*^9, 3.701235933429387*^9}, {
+   3.7012360275726995`*^9, 3.7012360463556833`*^9}, {3.701236076837891*^9, 
+   3.70123607731635*^9}, {3.701236111500891*^9, 3.7012361131557055`*^9}, 
+   3.7012362305884433`*^9, {3.701237429605876*^9, 3.7012374300050526`*^9}, {
+   3.701237978316163*^9, 3.701237989420486*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{"Main", " ", "Function"}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"runProgram", "[", "]"}], "  ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", "\t\t\t\t\t\t\t", 
+      RowBox[{
+       RowBox[{"preliminaries", "[", "]"}], ";", "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t\t", 
+       RowBox[{"initialise", "[", "]"}], ";", "\[IndentingNewLine]", 
+       "\t\t\t\t", "\[IndentingNewLine]", "\t\t\t\t\t\t\t", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+         RowBox[{
+         "Handle", " ", "events", " ", "when", " ", "the", " ", "time", " ", 
+          "of", " ", "the", " ", "earliest", " ", "upcoming", " ", "event"}], 
+         ",", " ", 
+         RowBox[{
+          RowBox[{"eventList", "[", 
+           RowBox[{"[", "1", "]"}], "]"}], "[", 
+          RowBox[{"[", "1", "]"}], "]"}], ",", " ", 
+         RowBox[{
+         "occurs", " ", "before", " ", "the", " ", "end", " ", "of", " ", 
+          "the", " ", "day"}], ",", " ", 
+         RowBox[{"marked", " ", "by", " ", "numberOfHoursInADay"}]}], " ", 
+        "*)"}], "\t\t\t\t", "\[IndentingNewLine]", "\t\t\t\t\t\t\t", 
+       RowBox[{"While", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{
+           RowBox[{"eventList", "[", 
+            RowBox[{"[", "1", "]"}], "]"}], "[", 
+           RowBox[{"[", "1", "]"}], "]"}], " ", "<", " ", 
+          "numberOfHoursInADay"}], ",", "\[IndentingNewLine]", 
+         "\t\t\t\t\t\t\t\t\t", 
+         RowBox[{
+          RowBox[{"handleNextEvent", "[", "]"}], ";"}]}], 
+        "\[IndentingNewLine]", "\t\t\t\t\t\t\t", "]"}], ";", 
+       "\[IndentingNewLine]", "\t\t\t", "\[IndentingNewLine]", 
+       "\t\t\t\t\t\t\t", 
+       RowBox[{"report", "[", "]"}], ";"}]}], "\t\t\t\t", 
+     "\[IndentingNewLine]", "\t\t\t", "]"}]}], ";"}]}]], "Input",
+ CellChangeTimes->{{3.701070960822732*^9, 3.70107098910456*^9}, {
+   3.701071385881233*^9, 3.701071405458191*^9}, {3.7010715464402876`*^9, 
+   3.7010715474403877`*^9}, {3.7010830443730035`*^9, 3.7010830551410804`*^9}, 
+   3.701084376723513*^9, {3.7010847673015776`*^9, 3.7010847673915777`*^9}, {
+   3.7010855619435773`*^9, 3.701085562767577*^9}, {3.7010855988455772`*^9, 
+   3.7010857350454807`*^9}, {3.701086148256798*^9, 3.7010861484708195`*^9}, {
+   3.701086629611929*^9, 3.7010866301719847`*^9}, {3.701233241771928*^9, 
+   3.7012332474103436`*^9}, 3.7012336546989393`*^9, {3.7012348169548287`*^9, 
+   3.7012348833149295`*^9}, {3.701234933170788*^9, 3.7012349422670555`*^9}, {
+   3.701235335044754*^9, 3.7012353530845757`*^9}, {3.7012358649712505`*^9, 
+   3.701235869732053*^9}, {3.7012361161704535`*^9, 3.7012361271800485`*^9}, {
+   3.7012362608984685`*^9, 3.7012362769945555`*^9}, {3.701237078772705*^9, 
+   3.7012370789876814`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"(*", " ", 
+  RowBox[{"Actually", " ", "run", " ", "the", " ", 
+   RowBox[{"program", ":"}]}], " ", "*)"}]], "Input",
+ CellChangeTimes->{{3.7012348007046833`*^9, 3.701234811440541*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"runProgram", "[", "]"}]], "Input",
+ CellChangeTimes->{{3.701237146182009*^9, 3.70123715168127*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"========================================\"\>"], "Print",
+ CellChangeTimes->{
+  3.701237158802845*^9, {3.701237277224363*^9, 3.701237340861723*^9}, {
+   3.7012373842882175`*^9, 3.701237465281893*^9}, {3.7012375126886873`*^9, 
+   3.7012375656385593`*^9}, 3.7012378160651693`*^9, {3.7012379319975915`*^9, 
+   3.7012379584936743`*^9}, 3.7012379947944694`*^9, 3.7012445358049293`*^9, {
+   3.701245446109353*^9, 3.70124547170426*^9}, {3.701245708268838*^9, 
+   3.7012457473835044`*^9}, {3.7146558227999563`*^9, 3.7146558695110703`*^9}}],
+
+Cell[BoxData["\<\"= Simulation run of M/G/c bank example =\"\>"], "Print",
+ CellChangeTimes->{
+  3.701237158802845*^9, {3.701237277224363*^9, 3.701237340861723*^9}, {
+   3.7012373842882175`*^9, 3.701237465281893*^9}, {3.7012375126886873`*^9, 
+   3.7012375656385593`*^9}, 3.7012378160651693`*^9, {3.7012379319975915`*^9, 
+   3.7012379584936743`*^9}, 3.7012379947944694`*^9, 3.7012445358049293`*^9, {
+   3.701245446109353*^9, 3.70124547170426*^9}, {3.701245708268838*^9, 
+   3.7012457473835044`*^9}, {3.7146558227999563`*^9, 3.714655869512574*^9}}],
+
+Cell[BoxData["\<\"========================================\"\>"], "Print",
+ CellChangeTimes->{
+  3.701237158802845*^9, {3.701237277224363*^9, 3.701237340861723*^9}, {
+   3.7012373842882175`*^9, 3.701237465281893*^9}, {3.7012375126886873`*^9, 
+   3.7012375656385593`*^9}, 3.7012378160651693`*^9, {3.7012379319975915`*^9, 
+   3.7012379584936743`*^9}, 3.7012379947944694`*^9, 3.7012445358049293`*^9, {
+   3.701245446109353*^9, 3.70124547170426*^9}, {3.701245708268838*^9, 
+   3.7012457473835044`*^9}, {3.7146558227999563`*^9, 3.71465586951458*^9}}],
+
+Cell[BoxData["\<\"Input parameters:\"\>"], "Print",
+ CellChangeTimes->{
+  3.701237158802845*^9, {3.701237277224363*^9, 3.701237340861723*^9}, {
+   3.7012373842882175`*^9, 3.701237465281893*^9}, {3.7012375126886873`*^9, 
+   3.7012375656385593`*^9}, 3.7012378160651693`*^9, {3.7012379319975915`*^9, 
+   3.7012379584936743`*^9}, 3.7012379947944694`*^9, 3.7012445358049293`*^9, {
+   3.701245446109353*^9, 3.70124547170426*^9}, {3.701245708268838*^9, 
+   3.7012457473835044`*^9}, {3.7146558227999563`*^9, 3.7146558695150805`*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"c equals \"\>", "\[InvisibleSpace]", "3", 
+   "\[InvisibleSpace]", "\<\".\"\>"}],
+  SequenceForm["c equals ", 3, "."],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.701237158802845*^9, {3.701237277224363*^9, 3.701237340861723*^9}, {
+   3.7012373842882175`*^9, 3.701237465281893*^9}, {3.7012375126886873`*^9, 
+   3.7012375656385593`*^9}, 3.7012378160651693`*^9, {3.7012379319975915`*^9, 
+   3.7012379584936743`*^9}, 3.7012379947944694`*^9, 3.7012445358049293`*^9, {
+   3.701245446109353*^9, 3.70124547170426*^9}, {3.701245708268838*^9, 
+   3.7012457473835044`*^9}, {3.7146558227999563`*^9, 3.7146558695150805`*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"\[Lambda] equals \"\>", "\[InvisibleSpace]", "60", 
+   "\[InvisibleSpace]", "\<\" per hour.\"\>"}],
+  SequenceForm["\[Lambda] equals ", 60, " per hour."],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.701237158802845*^9, {3.701237277224363*^9, 3.701237340861723*^9}, {
+   3.7012373842882175`*^9, 3.701237465281893*^9}, {3.7012375126886873`*^9, 
+   3.7012375656385593`*^9}, 3.7012378160651693`*^9, {3.7012379319975915`*^9, 
+   3.7012379584936743`*^9}, 3.7012379947944694`*^9, 3.7012445358049293`*^9, {
+   3.701245446109353*^9, 3.70124547170426*^9}, {3.701245708268838*^9, 
+   3.7012457473835044`*^9}, {3.7146558227999563`*^9, 3.7146558695160837`*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Lower bound on uniform service time is \"\>", 
+   "\[InvisibleSpace]", "0", "\[InvisibleSpace]", "\<\" hours.\"\>"}],
+  SequenceForm["Lower bound on uniform service time is ", 0, " hours."],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.701237158802845*^9, {3.701237277224363*^9, 3.701237340861723*^9}, {
+   3.7012373842882175`*^9, 3.701237465281893*^9}, {3.7012375126886873`*^9, 
+   3.7012375656385593`*^9}, 3.7012378160651693`*^9, {3.7012379319975915`*^9, 
+   3.7012379584936743`*^9}, 3.7012379947944694`*^9, 3.7012445358049293`*^9, {
+   3.701245446109353*^9, 3.70124547170426*^9}, {3.701245708268838*^9, 
+   3.7012457473835044`*^9}, {3.7146558227999563`*^9, 3.714655869517588*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Upper bound on uniform service time = \"\>", 
+   "\[InvisibleSpace]", 
+   FractionBox["1", "15"], "\[InvisibleSpace]", "\<\" hours.\"\>"}],
+  SequenceForm["Upper bound on uniform service time = ", 
+   Rational[1, 15], " hours."],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.701237158802845*^9, {3.701237277224363*^9, 3.701237340861723*^9}, {
+   3.7012373842882175`*^9, 3.701237465281893*^9}, {3.7012375126886873`*^9, 
+   3.7012375656385593`*^9}, 3.7012378160651693`*^9, {3.7012379319975915`*^9, 
+   3.7012379584936743`*^9}, 3.7012379947944694`*^9, 3.7012445358049293`*^9, {
+   3.701245446109353*^9, 3.70124547170426*^9}, {3.701245708268838*^9, 
+   3.7012457473835044`*^9}, {3.7146558227999563`*^9, 3.714655869518361*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Number of hours in a day equals \"\>", "\[InvisibleSpace]", 
+   "7", "\[InvisibleSpace]", "\<\".\"\>"}],
+  SequenceForm["Number of hours in a day equals ", 7, "."],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.701237158802845*^9, {3.701237277224363*^9, 3.701237340861723*^9}, {
+   3.7012373842882175`*^9, 3.701237465281893*^9}, {3.7012375126886873`*^9, 
+   3.7012375656385593`*^9}, 3.7012378160651693`*^9, {3.7012379319975915`*^9, 
+   3.7012379584936743`*^9}, 3.7012379947944694`*^9, 3.7012445358049293`*^9, {
+   3.701245446109353*^9, 3.70124547170426*^9}, {3.701245708268838*^9, 
+   3.7012457473835044`*^9}, {3.7146558227999563`*^9, 3.7146558695188646`*^9}}],
+
+Cell[BoxData["\<\"========================================\"\>"], "Print",
+ CellChangeTimes->{
+  3.701237158802845*^9, {3.701237277224363*^9, 3.701237340861723*^9}, {
+   3.7012373842882175`*^9, 3.701237465281893*^9}, {3.7012375126886873`*^9, 
+   3.7012375656385593`*^9}, 3.7012378160651693`*^9, {3.7012379319975915`*^9, 
+   3.7012379584936743`*^9}, 3.7012379947944694`*^9, 3.7012445358049293`*^9, {
+   3.701245446109353*^9, 3.70124547170426*^9}, {3.701245708268838*^9, 
+   3.7012457473835044`*^9}, {3.7146558227999563`*^9, 3.7146558695193653`*^9}}],
+
+Cell[BoxData["\<\"Results:\"\>"], "Print",
+ CellChangeTimes->{
+  3.701237158802845*^9, {3.701237277224363*^9, 3.701237340861723*^9}, {
+   3.7012373842882175`*^9, 3.701237465281893*^9}, {3.7012375126886873`*^9, 
+   3.7012375656385593`*^9}, 3.7012378160651693`*^9, {3.7012379319975915`*^9, 
+   3.7012379584936743`*^9}, 3.7012379947944694`*^9, 3.7012445358049293`*^9, {
+   3.701245446109353*^9, 3.70124547170426*^9}, {3.701245708268838*^9, 
+   3.7012457473835044`*^9}, {3.7146558227999563`*^9, 3.7146558695198665`*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Duration of the simulation is \"\>", "\[InvisibleSpace]", 
+   "6.9964513537797135`", "\[InvisibleSpace]", "\<\" hours\"\>"}],
+  SequenceForm[
+  "Duration of the simulation is ", 6.9964513537797135`, " hours"],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.701237158802845*^9, {3.701237277224363*^9, 3.701237340861723*^9}, {
+   3.7012373842882175`*^9, 3.701237465281893*^9}, {3.7012375126886873`*^9, 
+   3.7012375656385593`*^9}, 3.7012378160651693`*^9, {3.7012379319975915`*^9, 
+   3.7012379584936743`*^9}, 3.7012379947944694`*^9, 3.7012445358049293`*^9, {
+   3.701245446109353*^9, 3.70124547170426*^9}, {3.701245708268838*^9, 
+   3.7012457473835044`*^9}, {3.7146558227999563`*^9, 3.71465586952087*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"The total number of customers that arrived equals \"\>", 
+   "\[InvisibleSpace]", "414", "\[InvisibleSpace]", "\<\".\"\>"}],
+  SequenceForm["The total number of customers that arrived equals ", 414, "."],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.701237158802845*^9, {3.701237277224363*^9, 3.701237340861723*^9}, {
+   3.7012373842882175`*^9, 3.701237465281893*^9}, {3.7012375126886873`*^9, 
+   3.7012375656385593`*^9}, 3.7012378160651693`*^9, {3.7012379319975915`*^9, 
+   3.7012379584936743`*^9}, 3.7012379947944694`*^9, 3.7012445358049293`*^9, {
+   3.701245446109353*^9, 3.70124547170426*^9}, {3.701245708268838*^9, 
+   3.7012457473835044`*^9}, {3.7146558227999563`*^9, 3.7146558695218716`*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"The average queue length during the day equals \"\>", 
+   "\[InvisibleSpace]", "0.4544893295619789`", 
+   "\[InvisibleSpace]", "\<\".\"\>"}],
+  SequenceForm[
+  "The average queue length during the day equals ", 0.4544893295619789, "."],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.701237158802845*^9, {3.701237277224363*^9, 3.701237340861723*^9}, {
+   3.7012373842882175`*^9, 3.701237465281893*^9}, {3.7012375126886873`*^9, 
+   3.7012375656385593`*^9}, 3.7012378160651693`*^9, {3.7012379319975915`*^9, 
+   3.7012379584936743`*^9}, 3.7012379947944694`*^9, 3.7012445358049293`*^9, {
+   3.701245446109353*^9, 3.70124547170426*^9}, {3.701245708268838*^9, 
+   3.7012457473835044`*^9}, {3.7146558227999563`*^9, 3.7146558695218716`*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"The average waiting time of customers equals \"\>", 
+   "\[InvisibleSpace]", "0.007671993936055023`", 
+   "\[InvisibleSpace]", "\<\" hour(s).\"\>"}],
+  SequenceForm[
+  "The average waiting time of customers equals ", 0.007671993936055023, 
+   " hour(s)."],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.701237158802845*^9, {3.701237277224363*^9, 3.701237340861723*^9}, {
+   3.7012373842882175`*^9, 3.701237465281893*^9}, {3.7012375126886873`*^9, 
+   3.7012375656385593`*^9}, 3.7012378160651693`*^9, {3.7012379319975915`*^9, 
+   3.7012379584936743`*^9}, 3.7012379947944694`*^9, 3.7012445358049293`*^9, {
+   3.701245446109353*^9, 3.70124547170426*^9}, {3.701245708268838*^9, 
+   3.7012457473835044`*^9}, {3.7146558227999563`*^9, 3.7146558695228744`*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"The average fraction of the time a bank clerk has been busy \
+equals \"\>", "\[InvisibleSpace]", "0.6293561415288074`", 
+   "\[InvisibleSpace]", "\<\".\"\>"}],
+  SequenceForm[
+  "The average fraction of the time a bank clerk has been busy equals ", 
+   0.6293561415288074, "."],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.701237158802845*^9, {3.701237277224363*^9, 3.701237340861723*^9}, {
+   3.7012373842882175`*^9, 3.701237465281893*^9}, {3.7012375126886873`*^9, 
+   3.7012375656385593`*^9}, 3.7012378160651693`*^9, {3.7012379319975915`*^9, 
+   3.7012379584936743`*^9}, 3.7012379947944694`*^9, 3.7012445358049293`*^9, {
+   3.701245446109353*^9, 3.70124547170426*^9}, {3.701245708268838*^9, 
+   3.7012457473835044`*^9}, {3.7146558227999563`*^9, 3.714655869523376*^9}}]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1904, 943},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+PrintingCopies->1,
+PrintingPageRange->{32000, 32000},
+PrintingOptions->{"Magnification"->1.,
+"PaperOrientation"->"Portrait",
+"PaperSize"->{612, 792}},
+Magnification->1.0500000715255737`,
+FrontEndVersion->"9.0 for Microsoft Windows (64-bit) (January 25, 2013)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 421, 11, 72, "Text"],
+Cell[982, 33, 6902, 130, 609, "Input"],
+Cell[7887, 165, 980, 23, 52, "Input"],
+Cell[8870, 190, 977, 23, 69, "Input"],
+Cell[9850, 215, 936, 23, 112, "Input"],
+Cell[10789, 240, 2474, 53, 272, "Input"],
+Cell[13266, 295, 1535, 31, 112, "Input"],
+Cell[14804, 328, 4036, 83, 432, "Input"],
+Cell[18843, 413, 3972, 79, 352, "Input"],
+Cell[22818, 494, 4034, 78, 392, "Input"],
+Cell[26855, 574, 4620, 95, 432, "Input"],
+Cell[31478, 671, 2856, 58, 252, "Input"],
+Cell[34337, 731, 208, 4, 31, "Input"],
+Cell[CellGroupData[{
+Cell[34570, 739, 123, 2, 31, "Input"],
+Cell[CellGroupData[{
+Cell[34718, 745, 548, 7, 24, "Print"],
+Cell[35269, 754, 546, 7, 24, "Print"],
+Cell[35818, 763, 545, 7, 24, "Print"],
+Cell[36366, 772, 525, 7, 24, "Print"],
+Cell[36894, 781, 671, 12, 24, "Print"],
+Cell[37568, 795, 707, 12, 24, "Print"],
+Cell[38278, 809, 741, 12, 24, "Print"],
+Cell[39022, 823, 780, 14, 42, "Print"],
+Cell[39805, 839, 717, 12, 24, "Print"],
+Cell[40525, 853, 548, 7, 24, "Print"],
+Cell[41076, 862, 516, 7, 24, "Print"],
+Cell[41595, 871, 759, 13, 24, "Print"],
+Cell[42357, 886, 757, 12, 24, "Print"],
+Cell[43117, 900, 789, 14, 24, "Print"],
+Cell[43909, 916, 809, 15, 24, "Print"],
+Cell[44721, 933, 829, 15, 24, "Print"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
